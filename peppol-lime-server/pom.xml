@@ -23,6 +23,18 @@
       <artifactId>ph-web</artifactId>
     </dependency>
     <dependency>
+      <groupId>dnsjava</groupId>
+      <artifactId>dnsjava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>as2-lib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>peppol-sbdh</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
     </dependency>

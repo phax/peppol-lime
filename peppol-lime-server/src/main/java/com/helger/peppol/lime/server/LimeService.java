@@ -55,6 +55,7 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -62,13 +63,20 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.unece.cefact.namespaces.sbdh.StandardBusinessDocument;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import com.helger.as2lib.client.AS2Client;
+import com.helger.as2lib.client.AS2ClientRequest;
+import com.helger.as2lib.client.AS2ClientResponse;
+import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.charset.CCharset;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.system.ENewLineMode;
@@ -98,11 +106,14 @@ import com.helger.peppol.lime.server.exception.MessageIdReusedException;
 import com.helger.peppol.lime.server.exception.RecipientUnreachableException;
 import com.helger.peppol.lime.server.storage.LimeStorage;
 import com.helger.peppol.lime.server.storage.MessagePage;
+import com.helger.peppol.sbdh.DocumentData;
+import com.helger.peppol.sbdh.write.DocumentDataWriter;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.utils.W3CEndpointReferenceHelper;
+import com.helger.sbdh.SBDMarshaller;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
@@ -238,16 +249,16 @@ public class LimeService
       if (aMetadata == null)
         throw new IllegalStateException ("No such message ID found: " + sMessageID);
 
-      final String sRecipientAccessPointURLstr = _getAccessPointUrl (aMetadata.getRecipientID (),
-                                                                     aMetadata.getDocumentTypeID (),
-                                                                     aMetadata.getProcessID (),
-                                                                     aSML);
-      final String sSenderAccessPointURLstr = _getAccessPointUrl (aMetadata.getSenderID (),
-                                                                  aMetadata.getDocumentTypeID (),
-                                                                  aMetadata.getProcessID (),
-                                                                  aSML);
+      final String sRecipientEndpointURL = _getAccessPointUrl (aMetadata.getRecipientID (),
+                                                               aMetadata.getDocumentTypeID (),
+                                                               aMetadata.getProcessID (),
+                                                               aSML);
+      final String sSenderAccessPointURL = _getAccessPointUrl (aMetadata.getSenderID (),
+                                                               aMetadata.getDocumentTypeID (),
+                                                               aMetadata.getProcessID (),
+                                                               aSML);
 
-      if (sRecipientAccessPointURLstr.equalsIgnoreCase (sSenderAccessPointURLstr))
+      if (sRecipientEndpointURL.equalsIgnoreCase (sSenderAccessPointURL))
       {
         _logRequest ("This is a local request - sending directly to inbox",
                      sOwnAPURL,
@@ -258,10 +269,10 @@ public class LimeService
       else
       {
         _logRequest ("This is a request for a remote access point",
-                     sSenderAccessPointURLstr,
+                     sSenderAccessPointURL,
                      aMetadata,
-                     sRecipientAccessPointURLstr);
-        _sendToAccessPoint (aBody, sRecipientAccessPointURLstr, aMetadata);
+                     sRecipientEndpointURL);
+        _sendToAccessPoint (aBody, sRecipientEndpointURL, aMetadata);
       }
     }
     catch (final RecipientUnreachableException ex)
@@ -503,13 +514,34 @@ public class LimeService
   }
 
   private static void _sendToAccessPoint (@Nonnull final Put aBody,
-                                          @Nonnull final String sStartAPEndpointAddress,
-                                          final IMessageMetadata aMetadata) throws Exception
+                                          @Nonnull final String sAPEndpointAddress,
+                                          @Nonnull final IMessageMetadata aMetadata) throws Exception
   {
-    final Create createBody = new Create ();
-    createBody.getAny ().addAll (aBody.getAny ());
-    // TODO send
-    // AccessPointClient.send (sStartAPEndpointAddress, aMetadata, createBody);
+    final Element aSourceNode = (Element) aBody.getAnyAtIndex (0);
+
+    // Build SBDH
+    final DocumentData aDD = DocumentData.create (aSourceNode);
+    aDD.setSender (aMetadata.getSenderID ().getScheme (), aMetadata.getSenderID ().getValue ());
+    aDD.setReceiver (aMetadata.getRecipientID ().getScheme (), aMetadata.getRecipientID ().getValue ());
+    aDD.setDocumentType (aMetadata.getDocumentTypeID ().getScheme (), aMetadata.getDocumentTypeID ().getValue ());
+    aDD.setProcess (aMetadata.getProcessID ().getScheme (), aMetadata.getProcessID ().getValue ());
+
+    final StandardBusinessDocument aSBD = new DocumentDataWriter ().createStandardBusinessDocument (aDD);
+    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
+    if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
+      throw new IllegalStateException ("Failed to serialize SBD!");
+    aBAOS.close ();
+
+    // send message via AS2
+    final AS2ClientRequest aRequest = new AS2ClientRequest ("OpenPEPPOL AS2 message");
+    // Set as string - less problems than with byte[]
+    aRequest.setData (aBAOS.getAsString (CCharset.CHARSET_UTF_8_OBJ), CCharset.CHARSET_UTF_8_OBJ);
+    final AS2ClientSettings aSettings = AS2SettingsProvider.createAS2ClientSettings (sAPEndpointAddress, aMetadata);
+    final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aSettings, aRequest);
+    if (aResponse.hasException ())
+      s_aLogger.error ("Error sending to " + sAPEndpointAddress + ": " + aResponse.getAsString ());
+    else
+      s_aLogger.info ("Successfully forwarded message to " + sAPEndpointAddress);
   }
 
   private void _sendToInbox (@Nonnull final IMessageMetadata aMetadata,
@@ -556,7 +588,7 @@ public class LimeService
                                               aSMLInfo).getEndpointAddress (aRecipientId,
                                                                             aDocumentID,
                                                                             aProcessID,
-                                                                            ESMPTransportProfile.TRANSPORT_PROFILE_START);
+                                                                            ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
     if (ret == null)
       s_aLogger.warn ("Failed to resolve AP endpoint url for recipient " +
                       aRecipientId +

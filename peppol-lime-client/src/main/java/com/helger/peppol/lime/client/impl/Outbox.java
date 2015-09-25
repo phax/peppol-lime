@@ -72,16 +72,16 @@ import com.sun.xml.ws.developer.WSBindingProvider;
 public final class Outbox implements IOutbox {
   private static final Logger s_aLogger = LoggerFactory.getLogger (Outbox.class);
 
-  private static void _validateCredentials (@Nonnull final IReadonlyUsernamePWCredentials credentials) throws MessageException {
-    if (credentials == null)
+  private static void _validateCredentials (@Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws MessageException {
+    if (aCredentials == null)
       throw new MessageException ("Credentials can not be a null value");
 
-    if (StringHelper.hasNoTextAfterTrim (credentials.getUsername ()) ||
-        StringHelper.hasNoTextAfterTrim (credentials.getPassword ())) {
+    if (StringHelper.hasNoTextAfterTrim (aCredentials.getUsername ()) ||
+        StringHelper.hasNoTextAfterTrim (aCredentials.getPassword ())) {
       throw new MessageException ("Credentials are invalid, username=" +
-                                  credentials.getUsername () +
+                                  aCredentials.getUsername () +
                                   " password=" +
-                                  credentials.getPassword ());
+                                  aCredentials.getPassword ());
     }
   }
 

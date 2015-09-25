@@ -41,8 +41,6 @@ import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -51,7 +49,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.helger.commons.io.resource.ClassPathResource;
@@ -88,7 +85,7 @@ public final class MainLimeClient {
   public static final int POLL_SLEEP_MS = 3000;
   private static boolean s_bLeaveMessages = false;
   private static final IParticipantIdentifier SENDER = SimpleParticipantIdentifier.createWithDefaultScheme ("9914:atu415427xx");
-  private static final IParticipantIdentifier RECEIVER = SimpleParticipantIdentifier.createWithDefaultScheme ("9914:iwannatest");
+  private static final IParticipantIdentifier RECEIVER = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
   private static final IDocumentTypeIdentifier DOCID = EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS6A;
   private static final IProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS6A;
 
@@ -96,15 +93,15 @@ public final class MainLimeClient {
     if (false)
       PeppolTechnicalSetup.setMetroDebugSystemProperties (true);
 
-    final String apUrl2 = "http://localhost:8091/limeService";
+    final String sLimeUrl = "http://localhost:8091/limeService";
     // any xml will do
     final IReadableResource xmlFile = new ClassPathResource ("xml/CENBII-Order-maximal.xml");
 
-    _testSend (apUrl2, xmlFile, SENDER, RECEIVER);
+    _testSend (sLimeUrl, xmlFile, SENDER, RECEIVER);
     if (false)
-      _testReadAndDelete (apUrl2, RECEIVER);
+      _testReadAndDelete (sLimeUrl, RECEIVER);
     if (false)
-      _testMessageUndeliverable (apUrl2, xmlFile, SENDER, RECEIVER);
+      _testMessageUndeliverable (sLimeUrl, xmlFile, SENDER, RECEIVER);
   }
 
   private static void _testReadAndDelete (final String apUrl, final IIdentifier receiverID) throws Exception {
@@ -259,18 +256,13 @@ public final class MainLimeClient {
     }
   }
 
-  @Nullable
-  private static Document _loadXML (@Nonnull final IReadableResource xml) throws SAXException {
-    return DOMReader.readXMLDOM (xml);
-  }
-
   private static IMessage _createSampleMessage (final IReadableResource xml,
                                                 final IParticipantIdentifier senderID,
                                                 final IParticipantIdentifier receiverID,
                                                 final IDocumentTypeIdentifier documentID,
                                                 final IProcessIdentifier processID) throws SAXException {
     final IMessage message = new Message ();
-    message.setDocument (_loadXML (xml));
+    message.setDocument (DOMReader.readXMLDOM (xml));
     message.setDocumentType (new SimpleDocumentTypeIdentifier (documentID));
     message.setSender (new SimpleParticipantIdentifier (senderID));
     message.setReceiver (new SimpleParticipantIdentifier (receiverID));
