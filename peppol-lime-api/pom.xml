@@ -12,6 +12,12 @@
   <url>https://github.com/phax/peppol-lime/peppol-lime-api</url>
   <inceptionYear>2015</inceptionYear>
 
+  <properties>
+    <jaxws-plugin.version>2.3.1-b20150201.1248</jaxws-plugin.version>
+    <!-- Must correspond to jaxws-tools.version in jaxws-maven-plugin POM -->
+    <jaxws.version>2.2.9-b14002</jaxws.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>

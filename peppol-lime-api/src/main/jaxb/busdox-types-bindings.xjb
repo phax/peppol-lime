@@ -70,4 +70,9 @@
       <package name="com.helger.peppol.lime.api" />
     </schemaBindings>
   </bindings>
+  <bindings schemaLocation="../resources/WEB-INF/wsdl/ws-tra.xsd">
+    <schemaBindings>
+      <package name="com.helger.peppol.lime.api.wstransfer" />
+    </schemaBindings>
+  </bindings>
 </bindings>
