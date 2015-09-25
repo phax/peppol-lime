@@ -84,10 +84,10 @@ import com.helger.peppol.utils.PeppolTechnicalSetup;
 public final class MainLimeClient {
   public static final int POLL_SLEEP_MS = 3000;
   private static boolean s_bLeaveMessages = false;
-  private static final IParticipantIdentifier SENDER = SimpleParticipantIdentifier.createWithDefaultScheme ("9914:atu415427xx");
+  private static final IParticipantIdentifier SENDER = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:b");
   private static final IParticipantIdentifier RECEIVER = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
-  private static final IDocumentTypeIdentifier DOCID = EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS6A;
-  private static final IProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS6A;
+  private static final IDocumentTypeIdentifier DOCID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20;
+  private static final IProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS4A_V20;
 
   public static void main (final String [] args) throws Exception {
     if (false)

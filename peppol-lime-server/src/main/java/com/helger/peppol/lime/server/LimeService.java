@@ -112,6 +112,7 @@ import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
+import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.utils.W3CEndpointReferenceHelper;
 import com.helger.sbdh.SBDMarshaller;
 import com.sun.xml.ws.api.message.HeaderList;
@@ -253,10 +254,15 @@ public class LimeService
                                                                aMetadata.getDocumentTypeID (),
                                                                aMetadata.getProcessID (),
                                                                aSML);
+      if (sRecipientEndpointURL == null)
+        throw new IllegalStateException ("Failed to resolve recipient endpoint URL for " + aMetadata.toString ());
+
       final String sSenderAccessPointURL = _getAccessPointUrl (aMetadata.getSenderID (),
                                                                aMetadata.getDocumentTypeID (),
                                                                aMetadata.getProcessID (),
                                                                aSML);
+      if (sSenderAccessPointURL == null)
+        throw new IllegalStateException ("Failed to resolve sender endpoint URL for " + aMetadata.toString ());
 
       if (sRecipientEndpointURL.equalsIgnoreCase (sSenderAccessPointURL))
       {
@@ -582,20 +588,34 @@ public class LimeService
   private static String _getAccessPointUrl (final ParticipantIdentifierType aRecipientId,
                                             final DocumentIdentifierType aDocumentID,
                                             final ProcessIdentifierType aProcessID,
-                                            @Nonnull final ISMLInfo aSMLInfo) throws Exception
+                                            @Nonnull final ISMLInfo aSMLInfo)
   {
-    final String ret = new SMPClientReadOnly (aRecipientId,
-                                              aSMLInfo).getEndpointAddress (aRecipientId,
-                                                                            aDocumentID,
-                                                                            aProcessID,
-                                                                            ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
-    if (ret == null)
-      s_aLogger.warn ("Failed to resolve AP endpoint url for recipient " +
-                      aRecipientId +
-                      ", document type " +
-                      aDocumentID +
-                      " and process " +
-                      aProcessID);
+    String ret = null;
+    try
+    {
+      ret = new SMPClientReadOnly (aRecipientId,
+                                   aSMLInfo).getEndpointAddress (aRecipientId,
+                                                                 aDocumentID,
+                                                                 aProcessID,
+                                                                 ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
+      if (ret == null)
+        s_aLogger.error ("Failed to resolve AP endpoint url for recipient " +
+                         aRecipientId +
+                         ", document type " +
+                         aDocumentID +
+                         " and process " +
+                         aProcessID);
+    }
+    catch (final SMPClientException ex)
+    {
+      s_aLogger.error ("Failed to resolve AP endpoint url for recipient " +
+                       aRecipientId +
+                       ", document type " +
+                       aDocumentID +
+                       " and process " +
+                       aProcessID,
+                       ex);
+    }
     return ret;
   }
 }

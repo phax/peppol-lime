@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.system.SystemProperties;
+import com.helger.peppol.smpclient.SMPClientConfiguration;
 
 /**
  * Run this as an application and your SML will be up and running on port 8080
@@ -65,13 +66,17 @@ import com.helger.commons.system.SystemProperties;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class RunInJettyLIMEServer {
+public final class RunInJettyLIMEServer
+{
   private static final Logger s_aLogger = LoggerFactory.getLogger (RunInJettyLIMEServer.class);
   private static final String RESOURCE_PREFIX = "target/webapp-classes";
 
-  public static void main (final String... args) throws Exception {
+  public static void main (final String... args) throws Exception
+  {
     if (System.getSecurityManager () != null)
       throw new IllegalStateException ("Security Manager is set but not supported - aborting!");
+
+    SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
 
     // Create main server
     final Server aServer = new Server ();
@@ -105,20 +110,24 @@ public final class RunInJettyLIMEServer {
     aServer.setStopAtShutdown (true);
     // Starting shutdown listener thread
     new JettyMonitor ().start ();
-    try {
+    try
+    {
       // Starting the engines:
       aServer.start ();
-      if (aCtx.isFailed ()) {
+      if (aCtx.isFailed ())
+      {
         s_aLogger.error ("Failed to start server - stopping server!");
         aServer.stop ();
         s_aLogger.error ("Failed to start server - stopped server!");
       }
-      else {
+      else
+      {
         // Running the server!
         aServer.join ();
       }
     }
-    catch (final Exception ex) {
+    catch (final Exception ex)
+    {
       throw new IllegalStateException ("Failed to run server!", ex);
     }
   }
