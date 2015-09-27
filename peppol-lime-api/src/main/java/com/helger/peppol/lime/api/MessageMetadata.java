@@ -102,14 +102,6 @@ public final class MessageMetadata implements IMessageMetadata
                           @Nonnull final IDocumentTypeIdentifier aDocumentTypeID,
                           @Nonnull final IProcessIdentifier aProcessID)
   {
-    if (aSenderID == null)
-      throw new NullPointerException ("senderID");
-    if (aRecipientID == null)
-      throw new NullPointerException ("recipientID");
-    if (aDocumentTypeID == null)
-      throw new NullPointerException ("documentTypeID");
-    if (aProcessID == null)
-      throw new NullPointerException ("processID");
     m_sMessageID = sMessageID;
     m_sChannelID = sChannelID;
     m_aSenderID = new SimpleParticipantIdentifier (aSenderID);

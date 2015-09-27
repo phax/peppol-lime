@@ -37,6 +37,8 @@
  */
 package com.helger.peppol.lime.api;
 
+import java.io.Serializable;
+
 import javax.annotation.Nullable;
 
 import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
@@ -48,7 +50,7 @@ import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IMessageMetadata
+public interface IMessageMetadata extends Serializable
 {
   /**
    * Get message identifier value.
