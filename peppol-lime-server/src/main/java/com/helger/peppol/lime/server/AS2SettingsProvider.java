@@ -17,18 +17,13 @@ import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.peppol.lime.api.IMessageMetadata;
-import com.helger.peppol.sml.ESML;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.EndpointType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
-import com.helger.peppol.utils.ConfigFile;
 
 final class AS2SettingsProvider
 {
-  private static final ConfigFile s_aLimeConfig = new ConfigFile ("private-lime-server.properties",
-                                                                  "lime-server.properties");
-
   /**
    * @param aCert
    *        Source certificate. May not be <code>null</code>.
@@ -49,7 +44,8 @@ final class AS2SettingsProvider
                                                                                                       CertificateException
   {
     // Query SMP
-    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aMetadata.getRecipientID (), ESML.DIGIT_PRODUCTION);
+    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aMetadata.getRecipientID (),
+                                                                LimeServerConfiguration.getSML ());
     final EndpointType aEndpoint = aSMPClient.getEndpoint (aMetadata.getRecipientID (),
                                                            aMetadata.getDocumentTypeID (),
                                                            aMetadata.getProcessID (),
@@ -64,13 +60,13 @@ final class AS2SettingsProvider
 
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
-    aSettings.setKeyStore (new File (s_aLimeConfig.getString ("keystore.path")),
-                           s_aLimeConfig.getString ("keystore.password"));
+    aSettings.setKeyStore (new File (LimeServerConfiguration.getAS2KeystorePath ()),
+                           LimeServerConfiguration.getAS2KeystorePassword ());
 
     // Fixed sender
-    aSettings.setSenderData (s_aLimeConfig.getString ("sender.as2.id"),
-                             s_aLimeConfig.getString ("sender.as2.email"),
-                             s_aLimeConfig.getString ("sender.as2.keyalias"));
+    aSettings.setSenderData (LimeServerConfiguration.getAS2SenderID (),
+                             LimeServerConfiguration.getAS2SenderEmail (),
+                             LimeServerConfiguration.getAS2SenderKeyAlias ());
 
     // Dynamic receiver
     aSettings.setReceiverData (sReceiverID, sReceiverKeyAlias, sAPEndpointAddress);
