@@ -40,12 +40,15 @@ package com.helger.peppol.lime.server.exception;
 /**
  * @author Ravnholt
  */
-public class MessageIdReusedException extends Exception {
-  public MessageIdReusedException (final String message) {
+public class MessageIdReusedException extends Exception
+{
+  public MessageIdReusedException (final String message)
+  {
     super (message);
   }
 
-  public MessageIdReusedException (final Exception e) {
+  public MessageIdReusedException (final Exception e)
+  {
     super (e);
   }
 }

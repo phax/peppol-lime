@@ -49,11 +49,14 @@ import org.slf4j.LoggerFactory;
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class JettyStopLIMEServer {
+public final class JettyStopLIMEServer
+{
   private static final Logger s_aLogger = LoggerFactory.getLogger (JettyStopLIMEServer.class);
 
-  public static void main (final String [] args) throws IOException {
-    try (final Socket s = new Socket (InetAddress.getByName (null), JettyMonitor.STOP_PORT)) {
+  public static void main (final String [] args) throws IOException
+  {
+    try (final Socket s = new Socket (InetAddress.getByName (null), JettyMonitor.STOP_PORT))
+    {
       s.setSoLinger (false, 0);
 
       final OutputStream out = s.getOutputStream ();
@@ -61,7 +64,8 @@ public final class JettyStopLIMEServer {
       out.write ((JettyMonitor.STOP_KEY + "\r\nstop\r\n").getBytes ());
       out.flush ();
     }
-    catch (final ConnectException ex) {
+    catch (final ConnectException ex)
+    {
       s_aLogger.warn ("Jetty is not running");
     }
   }

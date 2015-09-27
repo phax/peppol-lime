@@ -48,6 +48,7 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ArrayHelper;
@@ -164,8 +165,7 @@ public final class AccessPointX509TrustManager implements X509TrustManager
    */
   private void _checkPrincipal (@Nonnull @Nonempty final X509Certificate [] aChain) throws CertificateException
   {
-    if (ArrayHelper.isEmpty (aChain))
-      throw new IllegalArgumentException ("No certificate to check provided");
+    ValueEnforcer.notEmpty (aChain, "Certificate chain");
 
     if (m_aCommonNames != null)
     {

@@ -21,9 +21,11 @@ import org.junit.Test;
 import com.helger.commons.mock.CommonsTestHelper;
 import com.helger.photon.core.mock.PhotonCoreValidator;
 
-public final class SPITest {
+public final class SPITest
+{
   @Test
-  public void testBasic () throws Exception {
+  public void testBasic () throws Exception
+  {
     CommonsTestHelper.testIfAllSPIImplementationsAreValid ();
     PhotonCoreValidator.validateExternalResources ();
   }

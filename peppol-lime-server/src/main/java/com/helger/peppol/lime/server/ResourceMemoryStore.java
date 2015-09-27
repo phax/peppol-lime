@@ -58,9 +58,11 @@ import com.helger.peppol.lime.api.IMessageMetadata;
  *         PEPPOL.AT, BRZ, Philip Helger
  */
 @ThreadSafe
-public final class ResourceMemoryStore {
+public final class ResourceMemoryStore
+{
   /** Memory efficient singleton holder */
-  private static final class SingletonHolder {
+  private static final class SingletonHolder
+  {
     static final ResourceMemoryStore s_aInstance = new ResourceMemoryStore ();
   }
 
@@ -68,31 +70,37 @@ public final class ResourceMemoryStore {
   private final Map <String, IMessageMetadata> m_aResourceMap = new HashMap <String, IMessageMetadata> ();
 
   /** Avoid instantiation */
-  private ResourceMemoryStore () {}
+  private ResourceMemoryStore ()
+  {}
 
   /**
    * @return Singleton {@link ResourceMemoryStore} instance. Never
    *         <code>null</code>.
    */
   @Nonnull
-  public static ResourceMemoryStore getInstance () {
+  public static ResourceMemoryStore getInstance ()
+  {
     return SingletonHolder.s_aInstance;
   }
 
   @Nonnull
-  private static String _getKey (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr) {
+  private static String _getKey (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr)
+  {
     ValueEnforcer.notEmpty (sMessageID, "MessageID");
     ValueEnforcer.notEmpty (sURLStr, "UrlStr");
     return sMessageID + sURLStr;
   }
 
-  public boolean isStored (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr) {
+  public boolean isStored (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr)
+  {
     m_aRWLock.readLock ().lock ();
-    try {
+    try
+    {
       final String sKey = _getKey (sMessageID, sURLStr);
       return m_aResourceMap.containsKey (sKey);
     }
-    finally {
+    finally
+    {
       m_aRWLock.readLock ().unlock ();
     }
   }
@@ -100,31 +108,37 @@ public final class ResourceMemoryStore {
   @Nonnull
   public EChange createResource (@Nonnull @Nonempty final String sMessageID,
                                  @Nonnull @Nonempty final String sURLStr,
-                                 @Nonnull final IMessageMetadata aMetadata) {
+                                 @Nonnull final IMessageMetadata aMetadata)
+  {
     ValueEnforcer.notNull (aMetadata, "Metadata");
 
     m_aRWLock.writeLock ().lock ();
-    try {
+    try
+    {
       final String sKey = _getKey (sMessageID, sURLStr);
       if (m_aResourceMap.containsKey (sKey))
         return EChange.UNCHANGED;
       m_aResourceMap.put (sKey, aMetadata);
       return EChange.CHANGED;
     }
-    finally {
+    finally
+    {
       m_aRWLock.writeLock ().unlock ();
     }
   }
 
   @Nullable
   public IMessageMetadata getMessage (@Nonnull @Nonempty final String sMessageID,
-                                      @Nonnull @Nonempty final String sURLStr) {
+                                      @Nonnull @Nonempty final String sURLStr)
+  {
     m_aRWLock.readLock ().lock ();
-    try {
+    try
+    {
       final String sKey = _getKey (sMessageID, sURLStr);
       return m_aResourceMap.get (sKey);
     }
-    finally {
+    finally
+    {
       m_aRWLock.readLock ().unlock ();
     }
   }

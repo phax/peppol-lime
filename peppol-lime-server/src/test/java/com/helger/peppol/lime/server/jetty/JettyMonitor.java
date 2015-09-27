@@ -50,7 +50,8 @@ import org.slf4j.LoggerFactory;
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class JettyMonitor extends Thread {
+public final class JettyMonitor extends Thread
+{
   public static final int STOP_PORT = 8077;
   public static final String STOP_KEY = "secret";
 
@@ -59,11 +60,13 @@ public final class JettyMonitor extends Thread {
   private final String m_sKey;
   private final ServerSocket m_aServerSocket;
 
-  public JettyMonitor () throws IOException {
+  public JettyMonitor () throws IOException
+  {
     this (STOP_PORT, STOP_KEY);
   }
 
-  private JettyMonitor (final int nPort, final String sKey) throws IOException {
+  private JettyMonitor (final int nPort, final String sKey) throws IOException
+  {
     m_nPort = nPort;
     m_sKey = sKey;
     setDaemon (true);
@@ -74,27 +77,34 @@ public final class JettyMonitor extends Thread {
   }
 
   @Override
-  public void run () {
-    while (true) {
-      try (final Socket aSocket = m_aServerSocket.accept ()) {
+  public void run ()
+  {
+    while (true)
+    {
+      try (final Socket aSocket = m_aServerSocket.accept ())
+      {
         final LineNumberReader lin = new LineNumberReader (new InputStreamReader (aSocket.getInputStream ()));
         final String sKey = lin.readLine ();
         if (!m_sKey.equals (sKey))
           continue;
 
         final String sCmd = lin.readLine ();
-        if ("stop".equals (sCmd)) {
-          try {
+        if ("stop".equals (sCmd))
+        {
+          try
+          {
             aSocket.close ();
             m_aServerSocket.close ();
           }
-          catch (final Exception e) {
+          catch (final Exception e)
+          {
             s_aLogger.error ("Failed to close socket", e);
           }
           System.exit (0);
         }
       }
-      catch (final Exception e) {
+      catch (final Exception e)
+      {
         s_aLogger.error ("Error reading from socket", e);
       }
     }

@@ -40,16 +40,20 @@ package com.helger.peppol.lime.server.exception;
 /**
  * @author Ravnholt
  */
-public class RecipientUnreachableException extends Exception {
-  public RecipientUnreachableException (final String message) {
+public class RecipientUnreachableException extends Exception
+{
+  public RecipientUnreachableException (final String message)
+  {
     super (message);
   }
 
-  public RecipientUnreachableException (final Exception e) {
+  public RecipientUnreachableException (final Exception e)
+  {
     super (e);
   }
 
-  public RecipientUnreachableException (final String message, final Exception e) {
+  public RecipientUnreachableException (final String message, final Exception e)
+  {
     super (message, e);
   }
 }

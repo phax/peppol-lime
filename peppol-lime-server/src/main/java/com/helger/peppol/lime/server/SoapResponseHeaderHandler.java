@@ -65,25 +65,32 @@ import com.helger.peppol.lime.api.CTransportIdentifiers;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public class SoapResponseHeaderHandler implements SOAPHandler <SOAPMessageContext> {
+public class SoapResponseHeaderHandler implements SOAPHandler <SOAPMessageContext>
+{
   private static final Logger s_aLogger = LoggerFactory.getLogger (SoapResponseHeaderHandler.class);
 
-  public boolean handleMessage (final SOAPMessageContext aMessageContext) {
+  public boolean handleMessage (final SOAPMessageContext aMessageContext)
+  {
     final SOAPMessage aMessage = aMessageContext.getMessage ();
 
-    if (((Boolean) aMessageContext.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY)).booleanValue ()) {
+    if (((Boolean) aMessageContext.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY)).booleanValue ())
+    {
       // It's an outgoing message
-      try {
+      try
+      {
         final SOAPEnvelope aEnvelope = aMessage.getSOAPPart ().getEnvelope ();
         final NodeList aChildNodes = aEnvelope.getBody ().getChildNodes ();
-        if (aChildNodes != null && aChildNodes.getLength () > 0) {
+        if (aChildNodes != null && aChildNodes.getLength () > 0)
+        {
           // a child is present
           final Node aChildNode = aChildNodes.item (0);
-          if (aChildNode != null && aChildNode.getChildNodes () != null && aChildNode.getChildNodes ().getLength () > 0) {
+          if (aChildNode != null && aChildNode.getChildNodes () != null && aChildNode.getChildNodes ().getLength () > 0)
+          {
             // Child has children present
             final Node aChildChildeNode = aChildNode.getChildNodes ().item (0);
             if (aChildChildeNode != null &&
-                aChildChildeNode.getNodeName ().indexOf (CTransportIdentifiers.ELEMENT_HEADERS) >= 0) {
+                aChildChildeNode.getNodeName ().indexOf (CTransportIdentifiers.ELEMENT_HEADERS) >= 0)
+            {
               final SOAPHeader aHeader = _attachIncomingHeaders (aEnvelope);
               _moveHeaderFromBodyToSoapHeader (aEnvelope, aHeader);
             }
@@ -91,7 +98,8 @@ public class SoapResponseHeaderHandler implements SOAPHandler <SOAPMessageContex
         }
         aMessage.saveChanges ();
       }
-      catch (final SOAPException ex) {
+      catch (final SOAPException ex)
+      {
         s_aLogger.error ("Failed to set outgoing headers", ex);
         return false;
       }
@@ -99,19 +107,23 @@ public class SoapResponseHeaderHandler implements SOAPHandler <SOAPMessageContex
     return true;
   }
 
-  public boolean handleFault (final SOAPMessageContext messageContext) {
+  public boolean handleFault (final SOAPMessageContext messageContext)
+  {
     // Continue processing
     return true;
   }
 
-  public void close (final MessageContext messageContext) {}
+  public void close (final MessageContext messageContext)
+  {}
 
-  public Set <QName> getHeaders () {
+  public Set <QName> getHeaders ()
+  {
     return null;
   }
 
   @Nonnull
-  private static SOAPHeader _attachIncomingHeaders (final SOAPEnvelope aSoapEnv) throws SOAPException {
+  private static SOAPHeader _attachIncomingHeaders (final SOAPEnvelope aSoapEnv) throws SOAPException
+  {
     final SOAPHeader aOldHeader = aSoapEnv.getHeader ();
     if (aOldHeader == null)
       return aSoapEnv.addHeader ();
@@ -121,7 +133,8 @@ public class SoapResponseHeaderHandler implements SOAPHandler <SOAPMessageContex
     final Iterator <?> iter = aOldHeader.extractAllHeaderElements ();
     aOldHeader.detachNode ();
     final SOAPHeader aNewHeader = aSoapEnv.addHeader ();
-    for (; iter.hasNext ();) {
+    for (; iter.hasNext ();)
+    {
       final SOAPHeaderElement soapHeaderElement = (SOAPHeaderElement) iter.next ();
       aNewHeader.addChildElement ((SOAPHeaderElement) soapHeaderElement.cloneNode (true));
     }
@@ -130,17 +143,20 @@ public class SoapResponseHeaderHandler implements SOAPHandler <SOAPMessageContex
 
   private static void _moveHeaderFromBodyToSoapHeader (@Nonnull final SOAPEnvelope aSoapEnv,
                                                        @Nonnull final SOAPHeader aSoapHeader) throws DOMException,
-                                                                                             SOAPException {
+                                                                                              SOAPException
+  {
     final Node aSoapBodyBaseNode = aSoapEnv.getBody ().getChildNodes ().item (0);
     final Node aBaseNode = aSoapBodyBaseNode.getChildNodes ().item (0);
-    for (int i = 0; i < aBaseNode.getChildNodes ().getLength (); i++) {
+    for (int i = 0; i < aBaseNode.getChildNodes ().getLength (); i++)
+    {
       final Node aChildNode = aBaseNode.getChildNodes ().item (i);
       // local name, no prefix and namespace URI
       final SOAPElement aSoapElement = aSoapHeader.addHeaderElement (aSoapEnv.createName (aChildNode.getLocalName (),
                                                                                           "",
                                                                                           aChildNode.getNamespaceURI ()));
       final NodeList aChildChildNodes = aChildNode.getChildNodes ();
-      if (aChildChildNodes != null) {
+      if (aChildChildNodes != null)
+      {
         final int nMax = aChildChildNodes.getLength ();
         for (int j = 0; j < nMax; j++)
           aSoapElement.appendChild (aChildChildNodes.item (j).cloneNode (true));
@@ -149,7 +165,8 @@ public class SoapResponseHeaderHandler implements SOAPHandler <SOAPMessageContex
       // Extract all "scheme" attributes
       final NamedNodeMap aAttributes = aChildNode.getAttributes ();
       if (aAttributes != null)
-        for (int a = 0; a < aAttributes.getLength (); a++) {
+        for (int a = 0; a < aAttributes.getLength (); a++)
+        {
           final Node aAttr = aAttributes.item (a);
           if (aAttr.getLocalName ().equals (CTransportIdentifiers.SCHEME_ATTR))
             aSoapElement.setAttribute (aAttr.getLocalName (), aAttr.getNodeValue ());

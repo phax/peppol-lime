@@ -46,9 +46,11 @@ import com.helger.peppol.lime.server.LimeService;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class LimeServiceTest {
+public final class LimeServiceTest
+{
   @Test
-  public void testCtor () {
+  public void testCtor ()
+  {
     new LimeService ();
   }
 }
