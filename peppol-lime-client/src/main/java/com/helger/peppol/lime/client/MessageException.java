@@ -41,12 +41,15 @@ package com.helger.peppol.lime.client;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public class MessageException extends Exception {
-  public MessageException (final String message) {
+public class MessageException extends Exception
+{
+  public MessageException (final String message)
+  {
     super (message);
   }
 
-  public MessageException (final Throwable t) {
+  public MessageException (final Throwable t)
+  {
     super (t);
   }
 }

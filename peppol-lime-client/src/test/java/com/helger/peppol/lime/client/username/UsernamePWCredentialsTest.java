@@ -53,21 +53,25 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class UsernamePWCredentialsTest {
+public final class UsernamePWCredentialsTest
+{
   @Test
   @SuppressFBWarnings ("NP_NONNULL_PARAM_VIOLATION")
-  public void testDefault () {
+  public void testDefault ()
+  {
     final UsernamePWCredentials uc = new UsernamePWCredentials ();
     assertNull (uc.getUsername ());
     assertNull (uc.getPassword ());
 
     uc.setUsername ("abc");
     assertEquals ("abc", uc.getUsername ());
-    try {
+    try
+    {
       uc.setUsername (null);
       fail ();
     }
-    catch (final IllegalArgumentException ex) {}
+    catch (final IllegalArgumentException ex)
+    {}
     assertEquals ("abc", uc.getUsername ());
 
     // Logged warning only:
@@ -76,7 +80,8 @@ public final class UsernamePWCredentialsTest {
   }
 
   @Test
-  public void testAll () {
+  public void testAll ()
+  {
     final UsernamePWCredentials uc = new UsernamePWCredentials ("name", "pw");
     assertEquals ("name", uc.getUsername ());
     assertEquals ("pw", uc.getPassword ());

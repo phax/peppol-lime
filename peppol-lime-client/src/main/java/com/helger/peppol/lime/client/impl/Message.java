@@ -51,7 +51,8 @@ import com.helger.peppol.lime.client.IMessage;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public class Message implements IMessage {
+public class Message implements IMessage
+{
 
   private final Date m_aCreatedTime;
   private String m_sMessageID;
@@ -61,65 +62,80 @@ public class Message implements IMessage {
   private IDocumentTypeIdentifier m_aDocumentType;
   private IProcessIdentifier m_aProcessType;
 
-  public Message () {
+  public Message ()
+  {
     m_sMessageID = UUID.randomUUID ().toString ();
     m_aCreatedTime = new Date ();
   }
 
-  void setMessageID (final String messageID) {
+  void setMessageID (final String messageID)
+  {
     m_sMessageID = messageID;
   }
 
-  public Document getDocument () {
+  public Document getDocument ()
+  {
     return m_aDocument;
   }
 
-  public void setDocument (final Document document) {
+  public void setDocument (final Document document)
+  {
     m_aDocument = document;
   }
 
-  public Date getCreatedTime () {
+  public Date getCreatedTime ()
+  {
     return m_aCreatedTime;
   }
 
-  public String getMessageID () {
+  public String getMessageID ()
+  {
     return m_sMessageID;
   }
 
-  public IParticipantIdentifier getSender () {
+  public IParticipantIdentifier getSender ()
+  {
     return m_aSender;
   }
 
-  public void setSender (final IParticipantIdentifier sender) {
+  public void setSender (final IParticipantIdentifier sender)
+  {
     m_aSender = sender;
   }
 
-  public IParticipantIdentifier getReceiver () {
+  public IParticipantIdentifier getReceiver ()
+  {
     return m_aReceiver;
   }
 
-  public void setReceiver (final IParticipantIdentifier reciever) {
+  public void setReceiver (final IParticipantIdentifier reciever)
+  {
     m_aReceiver = reciever;
   }
 
-  public IDocumentTypeIdentifier getDocumentType () {
+  public IDocumentTypeIdentifier getDocumentType ()
+  {
     return m_aDocumentType;
   }
 
-  public void setDocumentType (final IDocumentTypeIdentifier aDocumentType) {
+  public void setDocumentType (final IDocumentTypeIdentifier aDocumentType)
+  {
     m_aDocumentType = aDocumentType;
   }
 
-  public IProcessIdentifier getProcessType () {
+  public IProcessIdentifier getProcessType ()
+  {
     return m_aProcessType;
   }
 
-  public void setProcessType (final IProcessIdentifier aProcessType) {
+  public void setProcessType (final IProcessIdentifier aProcessType)
+  {
     m_aProcessType = aProcessType;
   }
 
   @Override
-  public String toString () {
+  public String toString ()
+  {
     final StringBuilder strBuf = new StringBuilder ();
     strBuf.append ("MESSAGE ID: " + (getMessageID () != null ? getMessageID () : ""));
     strBuf.append ("\nSENDER: " + (getSender () != null ? getSender ().getValue () : ""));

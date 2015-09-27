@@ -43,24 +43,29 @@ import com.helger.peppol.lime.client.IEndpointReference;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public class EndpointReference implements IEndpointReference {
+public class EndpointReference implements IEndpointReference
+{
 
   private String m_sAddress;
   private String m_sChannelID;
 
-  public String getAddress () {
+  public String getAddress ()
+  {
     return m_sAddress;
   }
 
-  public void setAddress (final String address) {
+  public void setAddress (final String address)
+  {
     m_sAddress = address;
   }
 
-  public String getChannelID () {
+  public String getChannelID ()
+  {
     return m_sChannelID;
   }
 
-  public void setChannelID (final String channelID) {
+  public void setChannelID (final String channelID)
+  {
     m_sChannelID = channelID;
   }
 }

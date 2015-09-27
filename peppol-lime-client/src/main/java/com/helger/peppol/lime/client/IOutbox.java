@@ -43,7 +43,8 @@ import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IOutbox {
+public interface IOutbox
+{
   // Sends a message. A new unique message ID is created and returned.
   String sendMessage (IReadonlyUsernamePWCredentials credentials,
                       IMessage message,

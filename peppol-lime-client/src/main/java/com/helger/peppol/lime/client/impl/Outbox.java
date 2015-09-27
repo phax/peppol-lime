@@ -69,15 +69,18 @@ import com.sun.xml.ws.developer.WSBindingProvider;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public final class Outbox implements IOutbox {
+public final class Outbox implements IOutbox
+{
   private static final Logger s_aLogger = LoggerFactory.getLogger (Outbox.class);
 
-  private static void _validateCredentials (@Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws MessageException {
+  private static void _validateCredentials (@Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws MessageException
+  {
     if (aCredentials == null)
       throw new MessageException ("Credentials can not be a null value");
 
     if (StringHelper.hasNoTextAfterTrim (aCredentials.getUsername ()) ||
-        StringHelper.hasNoTextAfterTrim (aCredentials.getPassword ())) {
+        StringHelper.hasNoTextAfterTrim (aCredentials.getPassword ()))
+    {
       throw new MessageException ("Credentials are invalid, username=" +
                                   aCredentials.getUsername () +
                                   " password=" +
@@ -86,9 +89,11 @@ public final class Outbox implements IOutbox {
   }
 
   @Nonnull
-  private static EndpointReferenceWithMessageID _createEndpointReferenceDocument (final CreateResponse createResponse) {
+  private static EndpointReferenceWithMessageID _createEndpointReferenceDocument (final CreateResponse createResponse)
+  {
     ResourceCreated resourceCreated = (ResourceCreated) createResponse.getAny ();
-    if (resourceCreated == null) {
+    if (resourceCreated == null)
+    {
       resourceCreated = createResponse.getResourceCreated ();
       if (resourceCreated == null)
         throw new IllegalStateException ("No content of create response!");
@@ -99,7 +104,8 @@ public final class Outbox implements IOutbox {
     // Extract address, channel ID and message ID
     final EndpointReferenceWithMessageID ret = new EndpointReferenceWithMessageID ();
     ret.setAddress (W3CEndpointReferenceHelper.getAddress (aEndpointReference));
-    for (final Element e : W3CEndpointReferenceHelper.getReferenceParameters (aEndpointReference)) {
+    for (final Element e : W3CEndpointReferenceHelper.getReferenceParameters (aEndpointReference))
+    {
       if (CLimeIdentifiers.CHANNELID.equals (e.getLocalName ()))
         ret.setChannelID (e.getTextContent ());
       else
@@ -116,10 +122,12 @@ public final class Outbox implements IOutbox {
    */
   public String sendMessage (final IReadonlyUsernamePWCredentials aCredentials,
                              final IMessage aMessage,
-                             final IEndpointReference aEndpointReference) throws MessageException {
+                             final IEndpointReference aEndpointReference) throws MessageException
+  {
     _validateCredentials (aCredentials);
 
-    try {
+    try
+    {
       // Create metadata (everything except messageID)
       final IMessageMetadata aMetadata = new MessageMetadata (null,
                                                               aEndpointReference.getChannelID (),
@@ -152,7 +160,8 @@ public final class Outbox implements IOutbox {
 
       return aEndpointDoc.getMessageID ();
     }
-    catch (final Exception e) {
+    catch (final Exception e)
+    {
       s_aLogger.warn ("Outbox error", e);
       throw new MessageException (e);
     }

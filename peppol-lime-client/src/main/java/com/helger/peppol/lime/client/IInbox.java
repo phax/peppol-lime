@@ -45,7 +45,8 @@ import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IInbox {
+public interface IInbox
+{
   // Returns a reference to all messages in the inbox
   List <IMessageReference> getMessageList (IReadonlyUsernamePWCredentials credentials,
                                            IEndpointReference endpointReference) throws MessageException;

@@ -56,19 +56,23 @@ import com.helger.commons.string.ToStringGenerator;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
-public final class UsernamePWCredentials implements IUsernamePWCredentials {
+public final class UsernamePWCredentials implements IUsernamePWCredentials
+{
   private static final Logger s_aLogger = LoggerFactory.getLogger (UsernamePWCredentials.class);
   private String m_sUsername;
   private String m_sPassword;
 
-  public UsernamePWCredentials () {}
+  public UsernamePWCredentials ()
+  {}
 
-  public UsernamePWCredentials (@Nonnull @Nonempty final String sUsername, @Nullable final String sPassword) {
+  public UsernamePWCredentials (@Nonnull @Nonempty final String sUsername, @Nullable final String sPassword)
+  {
     setUsername (sUsername);
     setPassword (sPassword);
   }
 
-  public void setUsername (@Nonnull @Nonempty final String sUsername) {
+  public void setUsername (@Nonnull @Nonempty final String sUsername)
+  {
     if (StringHelper.hasNoText (sUsername))
       throw new IllegalArgumentException ("No user name given!");
     if (sUsername.indexOf (':') >= 0)
@@ -79,21 +83,25 @@ public final class UsernamePWCredentials implements IUsernamePWCredentials {
   }
 
   @Nullable
-  public String getUsername () {
+  public String getUsername ()
+  {
     return m_sUsername;
   }
 
-  public void setPassword (@Nullable final String sPassword) {
+  public void setPassword (@Nullable final String sPassword)
+  {
     m_sPassword = sPassword;
   }
 
   @Nullable
-  public String getPassword () {
+  public String getPassword ()
+  {
     return m_sPassword;
   }
 
   @Override
-  public boolean equals (final Object o) {
+  public boolean equals (final Object o)
+  {
     if (o == this)
       return true;
     if (!(o instanceof UsernamePWCredentials))
@@ -103,12 +111,14 @@ public final class UsernamePWCredentials implements IUsernamePWCredentials {
   }
 
   @Override
-  public int hashCode () {
+  public int hashCode ()
+  {
     return new HashCodeGenerator (this).append (m_sUsername).append (m_sPassword).getHashCode ();
   }
 
   @Override
-  public String toString () {
+  public String toString ()
+  {
     return new ToStringGenerator (this).append ("username", m_sUsername).appendPassword ("password").toString ();
   }
 }

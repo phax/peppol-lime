@@ -47,34 +47,41 @@ import com.helger.peppol.lime.api.IMessageMetadata;
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class EndpointReferenceWithMessageID extends EndpointReference implements IMessageMetadata {
+public final class EndpointReferenceWithMessageID extends EndpointReference implements IMessageMetadata
+{
   private String m_sMessageID;
 
-  public String getMessageID () {
+  public String getMessageID ()
+  {
     return m_sMessageID;
   }
 
-  public void setMessageID (final String sMessageID) {
+  public void setMessageID (final String sMessageID)
+  {
     m_sMessageID = sMessageID;
   }
 
   @Nullable
-  public SimpleParticipantIdentifier getSenderID () {
+  public SimpleParticipantIdentifier getSenderID ()
+  {
     return null;
   }
 
   @Nullable
-  public SimpleParticipantIdentifier getRecipientID () {
+  public SimpleParticipantIdentifier getRecipientID ()
+  {
     return null;
   }
 
   @Nullable
-  public SimpleDocumentTypeIdentifier getDocumentTypeID () {
+  public SimpleDocumentTypeIdentifier getDocumentTypeID ()
+  {
     return null;
   }
 
   @Nullable
-  public SimpleProcessIdentifier getProcessID () {
+  public SimpleProcessIdentifier getProcessID ()
+  {
     return null;
   }
 }

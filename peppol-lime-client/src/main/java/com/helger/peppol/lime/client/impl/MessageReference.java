@@ -44,24 +44,29 @@ import com.helger.peppol.lime.client.IMessageReference;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public class MessageReference implements IMessageReference {
+public class MessageReference implements IMessageReference
+{
 
   private IEndpointReference m_aEndpointReference;
   private String m_sMessageId;
 
-  public void setEndpointReference (final IEndpointReference endpointReference) {
+  public void setEndpointReference (final IEndpointReference endpointReference)
+  {
     m_aEndpointReference = endpointReference;
   }
 
-  public void setMessageId (final String messageId) {
+  public void setMessageId (final String messageId)
+  {
     m_sMessageId = messageId;
   }
 
-  public IEndpointReference getEndpointReference () {
+  public IEndpointReference getEndpointReference ()
+  {
     return m_aEndpointReference;
   }
 
-  public String getMessageID () {
+  public String getMessageID ()
+  {
     return m_sMessageId;
   }
 }

@@ -49,13 +49,16 @@ import org.w3c.dom.Element;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public final class SoapHeaderMapper {
-  private SoapHeaderMapper () {}
+public final class SoapHeaderMapper
+{
+  private SoapHeaderMapper ()
+  {}
 
   public static void setupHandlerChain (final BindingProvider aBP,
                                         final String sChannelID,
                                         final String sMessageID,
-                                        final List <Element> aReferenceParameters) {
+                                        final List <Element> aReferenceParameters)
+  {
     final Binding aBinding = aBP.getBinding ();
     @SuppressWarnings ("rawtypes")
     final List <Handler> handlerList = aBinding.getHandlerChain ();

@@ -41,7 +41,8 @@ package com.helger.peppol.lime.client;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IMessageReference {
+public interface IMessageReference
+{
   IEndpointReference getEndpointReference ();
 
   void setEndpointReference (IEndpointReference endpointReference);

@@ -53,29 +53,35 @@ import com.helger.commons.string.ToStringGenerator;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class ReadonlyUsernamePWCredentials implements IReadonlyUsernamePWCredentials {
+public final class ReadonlyUsernamePWCredentials implements IReadonlyUsernamePWCredentials
+{
   private final UsernamePWCredentials m_aCredentials;
 
-  public ReadonlyUsernamePWCredentials (@Nonnull final IReadonlyUsernamePWCredentials aCredentials) {
+  public ReadonlyUsernamePWCredentials (@Nonnull final IReadonlyUsernamePWCredentials aCredentials)
+  {
     this (aCredentials.getUsername (), aCredentials.getPassword ());
   }
 
-  public ReadonlyUsernamePWCredentials (@Nonnull final String sUsername, @Nullable final String sPassword) {
+  public ReadonlyUsernamePWCredentials (@Nonnull final String sUsername, @Nullable final String sPassword)
+  {
     m_aCredentials = new UsernamePWCredentials (sUsername, sPassword);
   }
 
   @Nonnull
-  public String getUsername () {
+  public String getUsername ()
+  {
     return m_aCredentials.getUsername ();
   }
 
   @Nullable
-  public String getPassword () {
+  public String getPassword ()
+  {
     return m_aCredentials.getPassword ();
   }
 
   @Override
-  public boolean equals (final Object o) {
+  public boolean equals (final Object o)
+  {
     if (o == this)
       return true;
     if (!(o instanceof ReadonlyUsernamePWCredentials))
@@ -85,12 +91,14 @@ public final class ReadonlyUsernamePWCredentials implements IReadonlyUsernamePWC
   }
 
   @Override
-  public int hashCode () {
+  public int hashCode ()
+  {
     return new HashCodeGenerator (this).append (m_aCredentials).getHashCode ();
   }
 
   @Override
-  public String toString () {
+  public String toString ()
+  {
     return new ToStringGenerator (this).append ("username", getUsername ()).appendPassword ("password").toString ();
   }
 }

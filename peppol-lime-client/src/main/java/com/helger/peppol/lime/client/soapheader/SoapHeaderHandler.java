@@ -64,7 +64,8 @@ import com.helger.peppol.identifier.ParticipantIdentifierType;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext> {
+final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext>
+{
   private static final Logger s_aLogger = LoggerFactory.getLogger (SoapHeaderHandler.class.getName ());
 
   private final String m_sChannelID;
@@ -73,39 +74,49 @@ final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext> {
 
   public SoapHeaderHandler (final String channelID,
                             final String messageID,
-                            @Nullable final List <Element> referenceParameters) {
+                            @Nullable final List <Element> referenceParameters)
+  {
     m_sMessageID = messageID;
     m_sChannelID = channelID;
     m_aReferenceParameters = referenceParameters;
   }
 
-  public boolean handleMessage (final SOAPMessageContext smc) {
-    if (((Boolean) smc.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY)).booleanValue ()) {
+  public boolean handleMessage (final SOAPMessageContext smc)
+  {
+    if (((Boolean) smc.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY)).booleanValue ())
+    {
       // Outgoing message...
-      try {
+      try
+      {
         final SOAPEnvelope envelope = smc.getMessage ().getSOAPPart ().getEnvelope ();
         createSOAPHeader (envelope);
       }
-      catch (final Exception ex) {
+      catch (final Exception ex)
+      {
         s_aLogger.warn ("Failed to set header", ex);
       }
     }
     return true;
   }
 
-  public Set <QName> getHeaders () {
+  public Set <QName> getHeaders ()
+  {
     return null;
   }
 
-  public boolean handleFault (final SOAPMessageContext context) {
+  public boolean handleFault (final SOAPMessageContext context)
+  {
     return true;
   }
 
-  public void close (final MessageContext context) {}
+  public void close (final MessageContext context)
+  {}
 
-  private void createSOAPHeader (final SOAPEnvelope envelope) throws Exception {
+  private void createSOAPHeader (final SOAPEnvelope envelope) throws Exception
+  {
     SOAPHeader header = envelope.getHeader ();
-    if (header == null) {
+    if (header == null)
+    {
       header = envelope.addHeader ();
     }
 
@@ -118,22 +129,28 @@ final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext> {
 
     // java.lang. classes cannot be used with JAXBContextCache
     marshaller = JAXBContext.newInstance (String.class).createMarshaller ();
-    if (m_sChannelID != null) {
+    if (m_sChannelID != null)
+    {
       marshaller.marshal (objFactory.createChannelIdentifier (m_sChannelID), new DOMResult (header));
     }
-    if (m_sMessageID != null) {
+    if (m_sMessageID != null)
+    {
       marshaller.marshal (objFactory.createMessageIdentifier (m_sMessageID), new DOMResult (header));
     }
 
-    if (m_aReferenceParameters != null) {
-      try {
-        for (final Element node : m_aReferenceParameters) {
+    if (m_aReferenceParameters != null)
+    {
+      try
+      {
+        for (final Element node : m_aReferenceParameters)
+        {
           final SOAPElement aSOAPElement = header.addChildElement (new QName (node.getNamespaceURI (),
                                                                               node.getLocalName ()));
           aSOAPElement.setTextContent (node.getTextContent ());
         }
       }
-      catch (final Exception ex) {
+      catch (final Exception ex)
+      {
         s_aLogger.info ("Unable to set reference parameters", ex);
         throw ex;
       }

@@ -44,7 +44,8 @@ import javax.annotation.Nullable;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IHasUsername {
+public interface IHasUsername
+{
   /**
    * @return The user name.
    */

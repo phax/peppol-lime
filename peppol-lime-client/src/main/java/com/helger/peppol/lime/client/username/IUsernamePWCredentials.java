@@ -47,7 +47,8 @@ import com.helger.commons.annotation.Nonempty;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IUsernamePWCredentials extends IReadonlyUsernamePWCredentials {
+public interface IUsernamePWCredentials extends IReadonlyUsernamePWCredentials
+{
   /**
    * Set the user name
    * 

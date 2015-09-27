@@ -49,7 +49,8 @@ import com.helger.peppol.identifier.IProcessIdentifier;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IMessage {
+public interface IMessage
+{
   Date getCreatedTime ();
 
   String getMessageID ();

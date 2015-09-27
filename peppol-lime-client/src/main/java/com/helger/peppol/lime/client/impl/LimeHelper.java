@@ -60,19 +60,25 @@ import com.helger.peppol.lime.client.ws.LimeClientService;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public final class LimeHelper {
-  private LimeHelper () {}
+public final class LimeHelper
+{
+  private LimeHelper ()
+  {}
 
-  private static void _setupSSLSocketFactory () throws NoSuchAlgorithmException, KeyManagementException {
+  private static void _setupSSLSocketFactory () throws NoSuchAlgorithmException, KeyManagementException
+  {
     final TrustManager [] aTrustManagers = new TrustManager [] { new AccessPointX509TrustManager (null, null) };
     final SSLContext aSSLContext = SSLContext.getInstance ("SSL");
     aSSLContext.init (null, aTrustManagers, VerySecureRandom.getInstance ());
     HttpsURLConnection.setDefaultSSLSocketFactory (aSSLContext.getSocketFactory ());
   }
 
-  private static void _setupHostnameVerifier () {
-    final HostnameVerifier aHostVerifier = new HostnameVerifier () {
-      public boolean verify (final String sUrlHostName, final SSLSession aSSLSession) {
+  private static void _setupHostnameVerifier ()
+  {
+    final HostnameVerifier aHostVerifier = new HostnameVerifier ()
+    {
+      public boolean verify (final String sUrlHostName, final SSLSession aSSLSession)
+      {
         return sUrlHostName.equals (aSSLSession.getPeerHost ());
       }
     };
@@ -82,7 +88,8 @@ public final class LimeHelper {
   @Nonnull
   public static Resource createServicePort (@Nonnull @Nonempty final String sAPStr,
                                             @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws KeyManagementException,
-                                                                                                        NoSuchAlgorithmException {
+                                                                                                        NoSuchAlgorithmException
+  {
     if (StringHelper.hasNoTextAfterTrim (sAPStr))
       throw new IllegalArgumentException ("LIME access point url is empty");
 

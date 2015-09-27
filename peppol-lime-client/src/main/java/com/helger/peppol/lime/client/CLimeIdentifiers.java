@@ -54,7 +54,8 @@ import com.helger.peppol.lime.api.ObjectFactory;
  *         PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class CLimeIdentifiers {
+public final class CLimeIdentifiers
+{
   public static final String NAMESPACE_LIME = ObjectFactory.class.getPackage ()
                                                                  .getAnnotation (XmlSchema.class)
                                                                  .namespace ();
@@ -73,5 +74,6 @@ public final class CLimeIdentifiers {
   public static final IProcessIdentifier MESSAGEUNDELIVERABLE_PROCESS = new SimpleProcessIdentifier (BUSDOX_PROCID_TRANSPORT,
                                                                                                      CIdentifier.DEFAULT_PROCESS_IDENTIFIER_NOPROCESS);
 
-  private CLimeIdentifiers () {}
+  private CLimeIdentifiers ()
+  {}
 }

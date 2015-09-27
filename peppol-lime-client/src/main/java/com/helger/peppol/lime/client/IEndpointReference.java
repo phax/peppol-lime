@@ -41,7 +41,8 @@ package com.helger.peppol.lime.client;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IEndpointReference {
+public interface IEndpointReference
+{
   String getAddress ();
 
   void setAddress (String address);

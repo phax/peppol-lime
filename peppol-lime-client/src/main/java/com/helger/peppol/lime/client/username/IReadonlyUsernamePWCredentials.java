@@ -44,7 +44,8 @@ import javax.annotation.Nullable;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IReadonlyUsernamePWCredentials extends IHasUsername {
+public interface IReadonlyUsernamePWCredentials extends IHasUsername
+{
   /**
    * @return The password to use
    */

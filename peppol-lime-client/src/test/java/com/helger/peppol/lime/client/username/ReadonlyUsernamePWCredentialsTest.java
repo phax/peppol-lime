@@ -49,9 +49,11 @@ import com.helger.peppol.lime.client.username.ReadonlyUsernamePWCredentials;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class ReadonlyUsernamePWCredentialsTest {
+public final class ReadonlyUsernamePWCredentialsTest
+{
   @Test
-  public void testAll () {
+  public void testAll ()
+  {
     final ReadonlyUsernamePWCredentials uc = new ReadonlyUsernamePWCredentials ("name", "pw");
     assertEquals ("name", uc.getUsername ());
     assertEquals ("pw", uc.getPassword ());
