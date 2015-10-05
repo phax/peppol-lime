@@ -40,23 +40,70 @@
  */
 package com.helger.peppol.lime.server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.commons.collection.ArrayHelper;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.system.SystemProperties;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.utils.ConfigFile;
 
+/**
+ * The central configuration for the SMP server. This class manages the content
+ * of the "lime-server.properties" file. The order of the properties file
+ * resolving is as follows:
+ * <ol>
+ * <li>Check for the value of the system property
+ * <code>lime.server.properties.path</code></li>
+ * <li>The filename <code>private-lime-server.properties</code> in the root of
+ * the classpath</li>
+ * <li>The filename <code>lime-server.properties</code> in the root of the
+ * classpath</li>
+ * </ol>
+ *
+ * @author Philip Helger
+ */
 @Immutable
 public final class LimeServerConfiguration
 {
-  private static final ConfigFile s_aConfigFile = new ConfigFile ("private-lime-server.properties",
-                                                                  "lime-server.properties");
+  private static final Logger s_aLogger = LoggerFactory.getLogger (LimeServerConfiguration.class);
+  private static final ConfigFile s_aConfigFile;
+
+  static
+  {
+    final List <String> aFilePaths = new ArrayList <> ();
+    // Check if the system property is present
+    final String sPropertyPath = SystemProperties.getPropertyValue ("lime.server.properties.path");
+    if (StringHelper.hasText (sPropertyPath))
+      aFilePaths.add (sPropertyPath);
+
+    // Use the default paths
+    aFilePaths.add ("private-lime-server.properties");
+    aFilePaths.add ("lime-server.properties");
+
+    s_aConfigFile = new ConfigFile (ArrayHelper.newArray (aFilePaths, String.class));
+    if (s_aConfigFile.isRead ())
+      s_aLogger.info ("Read lime-server.properties from " + s_aConfigFile.getReadResource ().getPath ());
+    else
+      s_aLogger.warn ("Failed to read lime-server.properties from any of the paths: " + aFilePaths);
+  }
 
   private LimeServerConfiguration ()
   {}
 
+  /**
+   * @return The overall config file. Use this to read arbitrary settings. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   public static ConfigFile getConfigFile ()
   {

@@ -62,6 +62,11 @@ import com.helger.peppol.smp.EndpointType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 
+/**
+ * Helper class to provide the {@link AS2ClientSettings} to be used.
+ * 
+ * @author Philip Helger
+ */
 final class AS2SettingsProvider
 {
   /**
