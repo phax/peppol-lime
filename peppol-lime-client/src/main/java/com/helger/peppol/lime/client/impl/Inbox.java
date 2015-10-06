@@ -176,10 +176,9 @@ public class Inbox implements IInbox
 
       if (CollectionHelper.getSize (aObjects) == 1)
       {
-        final Document document = ((Node) CollectionHelper.getFirstElement (aObjects)).getOwnerDocument ();
-        final Message aMessage = new Message ();
-        aMessage.setDocument (document);
-        aMessage.setMessageID (aMessageReference.getMessageID ());
+        final Document aDocument = ((Node) CollectionHelper.getFirstElement (aObjects)).getOwnerDocument ();
+        final Message aMessage = new Message (aMessageReference.getMessageID ());
+        aMessage.setDocument (aDocument);
         _setMessageMetadata (aPort, aMessage);
         return aMessage;
       }
@@ -247,7 +246,7 @@ public class Inbox implements IInbox
           for (final Element e : W3CEndpointReferenceHelper.getReferenceParameters (aEntry.getEndpointReference ()))
             if (CLimeIdentifiers.MESSAGEID.equals (e.getLocalName ()))
             {
-              aMsgReference.setMessageId (e.getTextContent ());
+              aMsgReference.setMessageID (e.getTextContent ());
               break;
             }
 
@@ -272,9 +271,9 @@ public class Inbox implements IInbox
     final HeaderList aHeaderList = (HeaderList) ((BindingProvider) port).getResponseContext ()
                                                                         .get (JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY);
     final IMessageMetadata aMetadata = MessageMetadataHelper.createMetadataFromHeaders (aHeaderList);
-    message.setSender (aMetadata.getSenderID ());
-    message.setReceiver (aMetadata.getRecipientID ());
-    message.setDocumentType (aMetadata.getDocumentTypeID ());
-    message.setProcessType (aMetadata.getProcessID ());
+    message.setSenderID (aMetadata.getSenderID ());
+    message.setReceiverID (aMetadata.getRecipientID ());
+    message.setDocumentTypeID (aMetadata.getDocumentTypeID ());
+    message.setProcessID (aMetadata.getProcessID ());
   }
 }

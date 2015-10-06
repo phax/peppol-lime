@@ -42,6 +42,9 @@ package com.helger.peppol.lime.client;
 
 import java.util.Date;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.w3c.dom.Document;
 
 import com.helger.peppol.identifier.IDocumentTypeIdentifier;
@@ -54,27 +57,34 @@ import com.helger.peppol.identifier.IProcessIdentifier;
  */
 public interface IMessage
 {
+  @Nonnull
   Date getCreatedTime ();
 
+  @Nonnull
   String getMessageID ();
 
-  IParticipantIdentifier getSender ();
-
-  void setSender (IParticipantIdentifier aSenderID);
-
-  IParticipantIdentifier getReceiver ();
-
-  void setReceiver (IParticipantIdentifier aReceiverID);
-
-  IDocumentTypeIdentifier getDocumentType ();
-
-  void setDocumentType (IDocumentTypeIdentifier aDocumentTypeID);
-
+  @Nullable
   Document getDocument ();
 
-  void setDocument (Document aDocument);
+  void setDocument (@Nullable Document aDocument);
 
-  IProcessIdentifier getProcessType ();
+  @Nullable
+  IParticipantIdentifier getSenderID ();
 
-  void setProcessType (IProcessIdentifier aProcessID);
+  void setSenderID (@Nullable IParticipantIdentifier aSenderID);
+
+  @Nullable
+  IParticipantIdentifier getReceiverID ();
+
+  void setReceiverID (@Nullable IParticipantIdentifier aReceiverID);
+
+  @Nullable
+  IDocumentTypeIdentifier getDocumentTypeID ();
+
+  void setDocumentTypeID (@Nullable IDocumentTypeIdentifier aDocumentTypeID);
+
+  @Nullable
+  IProcessIdentifier getProcessID ();
+
+  void setProcessID (@Nullable IProcessIdentifier aProcessID);
 }

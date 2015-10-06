@@ -92,17 +92,17 @@ public final class Outbox implements IOutbox
   }
 
   @Nonnull
-  private static EndpointReferenceWithMessageID _createEndpointReferenceDocument (final CreateResponse createResponse)
+  private static EndpointReferenceWithMessageID _createEndpointReferenceDocument (@Nonnull final CreateResponse aCreateResponse)
   {
-    ResourceCreated resourceCreated = (ResourceCreated) createResponse.getAny ();
-    if (resourceCreated == null)
+    ResourceCreated aResourceCreated = (ResourceCreated) aCreateResponse.getAny ();
+    if (aResourceCreated == null)
     {
-      resourceCreated = createResponse.getResourceCreated ();
-      if (resourceCreated == null)
+      aResourceCreated = aCreateResponse.getResourceCreated ();
+      if (aResourceCreated == null)
         throw new IllegalStateException ("No content of create response!");
     }
 
-    final W3CEndpointReference aEndpointReference = resourceCreated.getEndpointReference ().get (0);
+    final W3CEndpointReference aEndpointReference = aResourceCreated.getEndpointReference ().get (0);
 
     // Extract address, channel ID and message ID
     final EndpointReferenceWithMessageID ret = new EndpointReferenceWithMessageID ();
@@ -123,9 +123,9 @@ public final class Outbox implements IOutbox
   /*
    * Send a new message and return the created message ID
    */
-  public String sendMessage (final IReadonlyUsernamePWCredentials aCredentials,
-                             final IMessage aMessage,
-                             final IEndpointReference aEndpointReference) throws MessageException
+  public String sendMessage (@Nonnull final IReadonlyUsernamePWCredentials aCredentials,
+                             @Nonnull final IMessage aMessage,
+                             @Nonnull final IEndpointReference aEndpointReference) throws MessageException
   {
     _validateCredentials (aCredentials);
 
@@ -134,11 +134,11 @@ public final class Outbox implements IOutbox
       // Create metadata (everything except messageID)
       final IMessageMetadata aMetadata = new MessageMetadata (null,
                                                               aEndpointReference.getChannelID (),
-                                                              aMessage.getSender (),
-                                                              aMessage.getReceiver (),
-                                                              aMessage.getDocumentType (),
-                                                              aMessage.getProcessType () != null ? aMessage.getProcessType ()
-                                                                                                 : CLimeIdentifiers.MESSAGEUNDELIVERABLE_PROCESS);
+                                                              aMessage.getSenderID (),
+                                                              aMessage.getReceiverID (),
+                                                              aMessage.getDocumentTypeID (),
+                                                              aMessage.getProcessID () != null ? aMessage.getProcessID ()
+                                                                                               : CLimeIdentifiers.MESSAGEUNDELIVERABLE_PROCESS);
 
       // Create "create" port
       Resource aPort = LimeHelper.createServicePort (aEndpointReference.getAddress (), aCredentials);

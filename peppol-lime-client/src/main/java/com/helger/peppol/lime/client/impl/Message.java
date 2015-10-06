@@ -43,8 +43,14 @@ package com.helger.peppol.lime.client.impl;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.w3c.dom.Document;
 
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.string.ToStringGenerator;
 import com.helger.peppol.identifier.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.IParticipantIdentifier;
 import com.helger.peppol.identifier.IProcessIdentifier;
@@ -56,101 +62,103 @@ import com.helger.peppol.lime.client.IMessage;
  */
 public class Message implements IMessage
 {
-
   private final Date m_aCreatedTime;
-  private String m_sMessageID;
+  private final String m_sMessageID;
   private Document m_aDocument;
-  private IParticipantIdentifier m_aSender;
-  private IParticipantIdentifier m_aReceiver;
-  private IDocumentTypeIdentifier m_aDocumentType;
-  private IProcessIdentifier m_aProcessType;
+  private IParticipantIdentifier m_aSenderID;
+  private IParticipantIdentifier m_aReceiverID;
+  private IDocumentTypeIdentifier m_aDocumentTypeID;
+  private IProcessIdentifier m_aProcessID;
 
   public Message ()
   {
-    m_sMessageID = UUID.randomUUID ().toString ();
+    this (UUID.randomUUID ().toString ());
+  }
+
+  public Message (@Nonnull @Nonempty final String sMessageID)
+  {
+    m_sMessageID = ValueEnforcer.notEmpty (sMessageID, "MessageID");
     m_aCreatedTime = new Date ();
   }
 
-  void setMessageID (final String messageID)
-  {
-    m_sMessageID = messageID;
-  }
-
-  public Document getDocument ()
-  {
-    return m_aDocument;
-  }
-
-  public void setDocument (final Document document)
-  {
-    m_aDocument = document;
-  }
-
+  @Nonnull
   public Date getCreatedTime ()
   {
     return m_aCreatedTime;
   }
 
+  @Nonnull
   public String getMessageID ()
   {
     return m_sMessageID;
   }
 
-  public IParticipantIdentifier getSender ()
+  @Nullable
+  public Document getDocument ()
   {
-    return m_aSender;
+    return m_aDocument;
   }
 
-  public void setSender (final IParticipantIdentifier sender)
+  public void setDocument (@Nullable final Document aDocument)
   {
-    m_aSender = sender;
+    m_aDocument = aDocument;
   }
 
-  public IParticipantIdentifier getReceiver ()
+  @Nullable
+  public IParticipantIdentifier getSenderID ()
   {
-    return m_aReceiver;
+    return m_aSenderID;
   }
 
-  public void setReceiver (final IParticipantIdentifier reciever)
+  public void setSenderID (@Nullable final IParticipantIdentifier aSenderID)
   {
-    m_aReceiver = reciever;
+    m_aSenderID = aSenderID;
   }
 
-  public IDocumentTypeIdentifier getDocumentType ()
+  @Nullable
+  public IParticipantIdentifier getReceiverID ()
   {
-    return m_aDocumentType;
+    return m_aReceiverID;
   }
 
-  public void setDocumentType (final IDocumentTypeIdentifier aDocumentType)
+  public void setReceiverID (@Nullable final IParticipantIdentifier aReceiverID)
   {
-    m_aDocumentType = aDocumentType;
+    m_aReceiverID = aReceiverID;
   }
 
-  public IProcessIdentifier getProcessType ()
+  @Nullable
+  public IDocumentTypeIdentifier getDocumentTypeID ()
   {
-    return m_aProcessType;
+    return m_aDocumentTypeID;
   }
 
-  public void setProcessType (final IProcessIdentifier aProcessType)
+  public void setDocumentTypeID (@Nullable final IDocumentTypeIdentifier aDocumentTypeID)
   {
-    m_aProcessType = aProcessType;
+    m_aDocumentTypeID = aDocumentTypeID;
+  }
+
+  @Nullable
+  public IProcessIdentifier getProcessID ()
+  {
+    return m_aProcessID;
+  }
+
+  public void setProcessID (@Nullable final IProcessIdentifier aProcessID)
+  {
+    m_aProcessID = aProcessID;
   }
 
   @Override
   public String toString ()
   {
-    final StringBuilder strBuf = new StringBuilder ();
-    strBuf.append ("MESSAGE ID: " + (getMessageID () != null ? getMessageID () : ""));
-    strBuf.append ("\nSENDER: " + (getSender () != null ? getSender ().getValue () : ""));
-    strBuf.append ("\nSENDER TYPE: " + (getSender () != null ? getSender ().getScheme () : ""));
-    strBuf.append ("\nRECIEVER: " + (getReceiver () != null ? getReceiver ().getValue () : ""));
-    strBuf.append ("\nRECIEVER TYPE: " + (getReceiver () != null ? getReceiver ().getScheme () : ""));
-    strBuf.append ("\nDOC: " + (getDocumentType () != null ? getDocumentType ().getValue () : ""));
-    strBuf.append ("\nDOC TYPE: " + (getDocumentType () != null ? getDocumentType ().getScheme () : ""));
-    strBuf.append ("\nPROCESS: " + (getProcessType () != null ? getProcessType ().getValue () : ""));
-    strBuf.append ("\nPROCESS TYPE: " + (getProcessType () != null ? getProcessType ().getScheme () : ""));
-
-    return strBuf.toString ();
+    return new ToStringGenerator (this).append ("CreatedTime", m_aCreatedTime)
+                                       .append ("MessageID", m_sMessageID)
+                                       .append ("Document", m_aDocument)
+                                       .append ("SenderID", m_aSenderID)
+                                       .append ("ReceiverID", m_aReceiverID)
+                                       .append ("DocumentTypeID", m_aDocumentTypeID)
+                                       .append ("ProcessID", m_aProcessID)
+                                       .toString ();
   }
 
 }

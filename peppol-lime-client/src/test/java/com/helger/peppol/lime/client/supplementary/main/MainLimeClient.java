@@ -185,7 +185,7 @@ public final class MainLimeClient
                                                                                    TransformerFactoryConfigurationError
   {
     final IMessageReference messageReference = new MessageReference ();
-    messageReference.setMessageId (messageID);
+    messageReference.setMessageID (messageID);
     messageReference.setEndpointReference (endpointReference);
     final IMessage fetchedMessage = new Inbox ().getMessage (_createCredentials (), messageReference);
     if (fetchedMessage != null)
@@ -226,7 +226,7 @@ public final class MainLimeClient
                                                                                       TransformerFactoryConfigurationError
   {
     final IMessageReference messageReference = new MessageReference ();
-    messageReference.setMessageId (messageID);
+    messageReference.setMessageID (messageID);
     messageReference.setEndpointReference (endpointReference);
     new Inbox ().deleteMessage (_createCredentials (), messageReference);
     System.out.println ("INBOX - MESSAGE DELETED: " + messageID);
@@ -295,10 +295,10 @@ public final class MainLimeClient
   {
     final IMessage message = new Message ();
     message.setDocument (DOMReader.readXMLDOM (xml));
-    message.setDocumentType (new SimpleDocumentTypeIdentifier (documentID));
-    message.setSender (new SimpleParticipantIdentifier (senderID));
-    message.setReceiver (new SimpleParticipantIdentifier (receiverID));
-    message.setProcessType (new SimpleProcessIdentifier (processID));
+    message.setDocumentTypeID (new SimpleDocumentTypeIdentifier (documentID));
+    message.setSenderID (new SimpleParticipantIdentifier (senderID));
+    message.setReceiverID (new SimpleParticipantIdentifier (receiverID));
+    message.setProcessID (new SimpleProcessIdentifier (processID));
     return message;
   }
 

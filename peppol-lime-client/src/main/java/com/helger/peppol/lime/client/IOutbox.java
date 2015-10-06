@@ -40,6 +40,8 @@
  */
 package com.helger.peppol.lime.client;
 
+import javax.annotation.Nonnull;
+
 import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
 
 /**
@@ -50,18 +52,18 @@ public interface IOutbox
 {
   /**
    * Sends a message. A new unique message ID is created and returned.
-   * 
+   *
    * @param aCredentials
    *        Credentials
    * @param aMessage
    *        Message to be send
    * @param aEndpointReference
    *        Endpoint reference to target
-   * @return Created uniqued message ID
+   * @return Created unique message ID
    * @throws MessageException
    *         In case of an error
    */
-  String sendMessage (IReadonlyUsernamePWCredentials aCredentials,
-                      IMessage aMessage,
-                      IEndpointReference aEndpointReference) throws MessageException;
+  String sendMessage (@Nonnull IReadonlyUsernamePWCredentials aCredentials,
+                      @Nonnull IMessage aMessage,
+                      @Nonnull IEndpointReference aEndpointReference) throws MessageException;
 }

@@ -75,12 +75,12 @@ final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext>
   private final String m_sMessageID;
   private final List <Element> m_aReferenceParameters;
 
-  public SoapHeaderHandler (final String channelID,
-                            final String messageID,
+  public SoapHeaderHandler (final String sChannelID,
+                            final String sMessageID,
                             @Nullable final List <Element> referenceParameters)
   {
-    m_sMessageID = messageID;
-    m_sChannelID = channelID;
+    m_sMessageID = sMessageID;
+    m_sChannelID = sChannelID;
     m_aReferenceParameters = referenceParameters;
   }
 

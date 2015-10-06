@@ -40,17 +40,21 @@
  */
 package com.helger.peppol.lime.client;
 
+import javax.annotation.Nullable;
+
 /**
  * @author Ravnholt
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface IMessageReference
 {
+  @Nullable
   IEndpointReference getEndpointReference ();
 
-  void setEndpointReference (IEndpointReference aEndpointReference);
+  void setEndpointReference (@Nullable IEndpointReference aEndpointReference);
 
+  @Nullable
   String getMessageID ();
 
-  void setMessageId (String sMessageId);
+  void setMessageID (@Nullable String sMessageID);
 }

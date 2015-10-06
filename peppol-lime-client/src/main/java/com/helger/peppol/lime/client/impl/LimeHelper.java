@@ -48,6 +48,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.xml.ws.BindingProvider;
 
@@ -68,24 +69,25 @@ public final class LimeHelper
   private LimeHelper ()
   {}
 
-  private static void _setupSSLSocketFactory () throws NoSuchAlgorithmException, KeyManagementException
+  private static SSLSocketFactory _createSSLSocketFactory () throws NoSuchAlgorithmException, KeyManagementException
   {
     final TrustManager [] aTrustManagers = new TrustManager [] { new AccessPointX509TrustManager (null, null) };
-    final SSLContext aSSLContext = SSLContext.getInstance ("SSL");
+    // TLS is important for IBM JDK (no difference for Oracle JDK)
+    final SSLContext aSSLContext = SSLContext.getInstance ("TLS");
     aSSLContext.init (null, aTrustManagers, VerySecureRandom.getInstance ());
-    HttpsURLConnection.setDefaultSSLSocketFactory (aSSLContext.getSocketFactory ());
+    return aSSLContext.getSocketFactory ();
   }
 
-  private static void _setupHostnameVerifier ()
+  private static HostnameVerifier _createHostnameVerifier ()
   {
-    final HostnameVerifier aHostVerifier = new HostnameVerifier ()
+    final HostnameVerifier aHostnameVerifier = new HostnameVerifier ()
     {
       public boolean verify (final String sUrlHostName, final SSLSession aSSLSession)
       {
         return sUrlHostName.equals (aSSLSession.getPeerHost ());
       }
     };
-    HttpsURLConnection.setDefaultHostnameVerifier (aHostVerifier);
+    return aHostnameVerifier;
   }
 
   @Nonnull
@@ -96,15 +98,34 @@ public final class LimeHelper
     if (StringHelper.hasNoTextAfterTrim (sAPStr))
       throw new IllegalArgumentException ("LIME access point url is empty");
 
-    _setupSSLSocketFactory ();
-
     final LimeClientService aService = new LimeClientService ();
     final Resource aPort = aService.getResourceBindingPort ();
-    final BindingProvider bp = (BindingProvider) aPort;
-    bp.getRequestContext ().put (BindingProvider.USERNAME_PROPERTY, aCredentials.getUsername ());
-    bp.getRequestContext ().put (BindingProvider.PASSWORD_PROPERTY, aCredentials.getPassword ());
-    bp.getRequestContext ().put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, sAPStr);
-    _setupHostnameVerifier ();
+    final BindingProvider aBP = (BindingProvider) aPort;
+    aBP.getRequestContext ().put (BindingProvider.USERNAME_PROPERTY, aCredentials.getUsername ());
+    aBP.getRequestContext ().put (BindingProvider.PASSWORD_PROPERTY, aCredentials.getPassword ());
+    aBP.getRequestContext ().put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, sAPStr);
+
+    final SSLSocketFactory aSSLSocketFactory = _createSSLSocketFactory ();
+    if (aSSLSocketFactory != null)
+    {
+      aBP.getRequestContext ().put ("com.sun.xml.ws.transport.https.client.SSLSocketFactory", aSSLSocketFactory);
+      aBP.getRequestContext ().put ("com.sun.xml.internal.ws.transport.https.client.SSLSocketFactory",
+                                    aSSLSocketFactory);
+      // Set as default as well because Metro has problems with the properties
+      // See https://java.net/jira/browse/WSIT-1632
+      HttpsURLConnection.setDefaultSSLSocketFactory (aSSLSocketFactory);
+    }
+
+    final HostnameVerifier aHostnameVerifier = _createHostnameVerifier ();
+    if (aHostnameVerifier != null)
+    {
+      aBP.getRequestContext ().put ("com.sun.xml.ws.transport.https.client.hostname.verifier", aHostnameVerifier);
+      aBP.getRequestContext ().put ("com.sun.xml.internal.ws.transport.https.client.hostname.verifier",
+                                    aHostnameVerifier);
+      // Set as default as well because Metro has problems with the properties
+      // See https://java.net/jira/browse/WSIT-1632
+      HttpsURLConnection.setDefaultHostnameVerifier (aHostnameVerifier);
+    }
 
     return aPort;
   }

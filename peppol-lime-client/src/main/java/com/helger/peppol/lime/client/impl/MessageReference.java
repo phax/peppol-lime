@@ -40,6 +40,9 @@
  */
 package com.helger.peppol.lime.client.impl;
 
+import javax.annotation.Nullable;
+
+import com.helger.commons.string.ToStringGenerator;
 import com.helger.peppol.lime.client.IEndpointReference;
 import com.helger.peppol.lime.client.IMessageReference;
 
@@ -49,27 +52,35 @@ import com.helger.peppol.lime.client.IMessageReference;
  */
 public class MessageReference implements IMessageReference
 {
-
   private IEndpointReference m_aEndpointReference;
-  private String m_sMessageId;
-
-  public void setEndpointReference (final IEndpointReference endpointReference)
-  {
-    m_aEndpointReference = endpointReference;
-  }
-
-  public void setMessageId (final String messageId)
-  {
-    m_sMessageId = messageId;
-  }
+  private String m_sMessageID;
 
   public IEndpointReference getEndpointReference ()
   {
     return m_aEndpointReference;
   }
 
+  public void setEndpointReference (@Nullable final IEndpointReference aEndpointReference)
+  {
+    m_aEndpointReference = aEndpointReference;
+  }
+
+  @Nullable
   public String getMessageID ()
   {
-    return m_sMessageId;
+    return m_sMessageID;
+  }
+
+  public void setMessageID (@Nullable final String sMessageID)
+  {
+    m_sMessageID = sMessageID;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("EndpointReference", m_aEndpointReference)
+                                       .append ("MessageID", m_sMessageID)
+                                       .toString ();
   }
 }
