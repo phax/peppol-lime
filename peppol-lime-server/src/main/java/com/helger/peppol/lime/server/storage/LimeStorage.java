@@ -55,18 +55,18 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.helger.commons.CGlobal;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.io.file.filter.FileFilterFilenameEndsWith;
-import com.helger.commons.string.StringHelper;
 import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.datetime.PDTFactory;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class LimeStorage
 {
@@ -80,9 +80,7 @@ public final class LimeStorage
 
   public LimeStorage (@Nonnull @Nonempty final String sStorePath)
   {
-    if (StringHelper.hasNoText (sStorePath))
-      throw new IllegalArgumentException ("storePath");
-    m_sStorePath = sStorePath;
+    m_sStorePath = ValueEnforcer.notEmpty (sStorePath, "StorePath");
   }
 
   public void saveDocument (@Nonnull final String sChannelID,

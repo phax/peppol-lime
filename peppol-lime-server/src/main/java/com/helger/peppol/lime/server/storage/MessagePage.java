@@ -71,8 +71,8 @@ import com.helger.peppol.utils.W3CEndpointReferenceHelper;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class MessagePage
 {

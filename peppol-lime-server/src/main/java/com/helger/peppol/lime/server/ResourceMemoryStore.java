@@ -56,9 +56,9 @@ import com.helger.peppol.lime.api.IMessageMetadata;
 
 /**
  * Memory backed storage of all known objects
- * 
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @ThreadSafe
 public final class ResourceMemoryStore

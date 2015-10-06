@@ -51,6 +51,7 @@ import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPConstants;
@@ -79,15 +80,16 @@ import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.system.ENewLineMode;
 import com.helger.commons.xml.XMLFactory;
 import com.helger.jaxb.JAXBContextCache;
-import com.helger.peppol.identifier.DocumentIdentifierType;
-import com.helger.peppol.identifier.ParticipantIdentifierType;
-import com.helger.peppol.identifier.ProcessIdentifierType;
+import com.helger.peppol.identifier.IDocumentTypeIdentifier;
+import com.helger.peppol.identifier.IParticipantIdentifier;
+import com.helger.peppol.identifier.IProcessIdentifier;
 import com.helger.peppol.lime.api.CTransportIdentifiers;
 import com.helger.peppol.lime.api.IMessageMetadata;
 import com.helger.peppol.lime.api.MessageMetadata;
@@ -111,9 +113,9 @@ import com.helger.peppol.lime.server.storage.LimeStorage;
 import com.helger.peppol.lime.server.storage.MessagePage;
 import com.helger.peppol.sbdh.DocumentData;
 import com.helger.peppol.sbdh.write.DocumentDataWriter;
-import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smp.ESMPTransportProfile;
+import com.helger.peppol.smp.EndpointType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.utils.W3CEndpointReferenceHelper;
@@ -122,8 +124,10 @@ import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * The main LIME web service
+ *
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @WebService (serviceName = "limeService",
              portName = "ResourceBindingPort",
@@ -143,12 +147,33 @@ public class LimeService
   private static final ObjectFactory s_aObjFactory = new ObjectFactory ();
 
   @Resource
-  private WebServiceContext webServiceContext;
+  private WebServiceContext m_aWebServiceContext;
 
+  /**
+   * @return The {@link ServletContext} of the current WS request
+   */
+  @Nonnull
+  private ServletContext _getServletContext ()
+  {
+    return (ServletContext) m_aWebServiceContext.getMessageContext ().get (MessageContext.SERVLET_CONTEXT);
+  }
+
+  /**
+   * @return The HTTP {@link HeaderList} of the current WS request
+   */
   @Nonnull
   private HeaderList _getInboundHeaderList ()
   {
-    return (HeaderList) webServiceContext.getMessageContext ().get (JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY);
+    return (HeaderList) m_aWebServiceContext.getMessageContext ().get (JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY);
+  }
+
+  /**
+   * @return The {@link HttpServletRequest} of the current WS request
+   */
+  @Nonnull
+  private HttpServletRequest _getServletRequest ()
+  {
+    return (HttpServletRequest) m_aWebServiceContext.getMessageContext ().get (MessageContext.SERVLET_REQUEST);
   }
 
   @Nonnull
@@ -178,12 +203,13 @@ public class LimeService
                                                        @Nonnull final String sChannelID,
                                                        @Nonnull final String sMessageID)
   {
-    final W3CEndpointReference w3CEndpointReference = _createW3CEndpointReference (sOurAPURL, sChannelID, sMessageID);
-
     final CreateResponse ret = new CreateResponse ();
-    final ResourceCreated aResourceCreated = new ResourceCreated ();
-    aResourceCreated.getEndpointReference ().add (w3CEndpointReference);
-    ret.setResourceCreated (aResourceCreated);
+    {
+      final ResourceCreated aResourceCreated = new ResourceCreated ();
+      final W3CEndpointReference w3CEndpointReference = _createW3CEndpointReference (sOurAPURL, sChannelID, sMessageID);
+      aResourceCreated.getEndpointReference ().add (w3CEndpointReference);
+      ret.setResourceCreated (aResourceCreated);
+    }
     return ret;
   }
 
@@ -246,42 +272,41 @@ public class LimeService
     final String sMessageID = MessageMetadataHelper.getMessageID (aHeaderList);
     final String sOwnAPURL = _getOurAPURL ();
     final IMessageMetadata aMetadata = ResourceMemoryStore.getInstance ().getMessage (sMessageID, sOwnAPURL);
-    final ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
+    final ISMLInfo aSML = LimeServerConfiguration.getSML ();
 
     try
     {
       if (aMetadata == null)
         throw new IllegalStateException ("No such message ID found: " + sMessageID);
 
-      final String sRecipientEndpointURL = _getAccessPointUrl (aMetadata.getRecipientID (),
-                                                               aMetadata.getDocumentTypeID (),
-                                                               aMetadata.getProcessID (),
-                                                               aSML);
-      if (sRecipientEndpointURL == null)
-        throw new IllegalStateException ("Failed to resolve recipient endpoint URL for " + aMetadata.toString ());
-
-      final String sSenderAccessPointURL = _getAccessPointUrl (aMetadata.getSenderID (),
-                                                               aMetadata.getDocumentTypeID (),
-                                                               aMetadata.getProcessID (),
-                                                               aSML);
-      if (sSenderAccessPointURL == null)
+      final EndpointType aSenderEndpoint = _getEndpoint (aMetadata.getSenderID (),
+                                                         aMetadata.getDocumentTypeID (),
+                                                         aMetadata.getProcessID (),
+                                                         aSML);
+      if (aSenderEndpoint == null)
         throw new IllegalStateException ("Failed to resolve sender endpoint URL for " + aMetadata.toString ());
 
-      if (sRecipientEndpointURL.equalsIgnoreCase (sSenderAccessPointURL))
+      final EndpointType aRecipientEndpoint = _getEndpoint (aMetadata.getRecipientID (),
+                                                            aMetadata.getDocumentTypeID (),
+                                                            aMetadata.getProcessID (),
+                                                            aSML);
+      if (aRecipientEndpoint == null)
+        throw new IllegalStateException ("Failed to resolve recipient endpoint URL for " + aMetadata.toString ());
+
+      final String sSenderURL = W3CEndpointReferenceHelper.getAddress (aSenderEndpoint.getEndpointReference ());
+      final String sRecipientURL = W3CEndpointReferenceHelper.getAddress (aRecipientEndpoint.getEndpointReference ());
+      if (EqualsHelper.equalsIgnoreCase (sSenderURL, sRecipientURL))
       {
         _logRequest ("This is a local request - sending directly to inbox",
-                     sOwnAPURL,
+                     sSenderURL,
                      aMetadata,
                      "INBOX: " + aMetadata.getRecipientID ().getValue ());
         _sendToInbox (aMetadata, aBody);
       }
       else
       {
-        _logRequest ("This is a request for a remote access point",
-                     sSenderAccessPointURL,
-                     aMetadata,
-                     sRecipientEndpointURL);
-        _sendToAccessPoint (aBody, sRecipientEndpointURL, aMetadata);
+        _logRequest ("This is a request for a remote access point", sSenderURL, aMetadata, sRecipientURL);
+        _sendToAccessPoint (aBody, aRecipientEndpoint, aMetadata);
       }
     }
     catch (final RecipientUnreachableException ex)
@@ -316,8 +341,7 @@ public class LimeService
     final GetResponse aGetResponse = new GetResponse ();
     try
     {
-      final String sStorageRoot = ((ServletContext) webServiceContext.getMessageContext ()
-                                                                     .get (MessageContext.SERVLET_CONTEXT)).getRealPath ("/");
+      final String sStorageRoot = _getServletContext ().getRealPath ("/");
       if (StringHelper.hasNoText (sMessageID))
         _addPageListToResponse (sStorageRoot, sPageIdentifier, sChannelID, aGetResponse);
       else
@@ -344,8 +368,7 @@ public class LimeService
     final String messageID = MessageMetadataHelper.getMessageID (aHeaderList);
     try
     {
-      final String sStorageRoot = ((ServletContext) webServiceContext.getMessageContext ()
-                                                                     .get (MessageContext.SERVLET_CONTEXT)).getRealPath ("/");
+      final String sStorageRoot = _getServletContext ().getRealPath ("/");
       new LimeStorage (sStorageRoot).deleteDocument (channelID, messageID);
     }
     catch (final Exception ex)
@@ -444,16 +467,14 @@ public class LimeService
   {
     // FIXME read this from the configuration file for easily correct handling
     // of the endpoint URL
-    final ServletRequest servletRequest = (ServletRequest) webServiceContext.getMessageContext ()
-                                                                            .get (MessageContext.SERVLET_REQUEST);
-    final String contextPath = ((ServletContext) webServiceContext.getMessageContext ()
-                                                                  .get (MessageContext.SERVLET_CONTEXT)).getContextPath ();
+    final ServletRequest servletRequest = _getServletRequest ();
+    final String sContextPath = _getServletContext ().getContextPath ();
     final String thisAccessPointURLstr = servletRequest.getScheme () +
                                          "://" +
                                          servletRequest.getServerName () +
                                          ":" +
                                          servletRequest.getLocalPort () +
-                                         contextPath +
+                                         sContextPath +
                                          '/';
     return thisAccessPointURLstr + SERVICENAME;
   }
@@ -523,7 +544,7 @@ public class LimeService
   }
 
   private static void _sendToAccessPoint (@Nonnull final Put aBody,
-                                          @Nonnull final String sAPEndpointAddress,
+                                          @Nonnull final EndpointType aRecipientEndpoint,
                                           @Nonnull final IMessageMetadata aMetadata) throws Exception
   {
     final Element aSourceNode = (Element) aBody.getAnyAtIndex (0);
@@ -545,12 +566,12 @@ public class LimeService
     final AS2ClientRequest aRequest = new AS2ClientRequest ("OpenPEPPOL AS2 message");
     // Set as string - less problems than with byte[]
     aRequest.setData (aBAOS.getAsString (CCharset.CHARSET_UTF_8_OBJ), CCharset.CHARSET_UTF_8_OBJ);
-    final AS2ClientSettings aSettings = AS2SettingsProvider.createAS2ClientSettings (sAPEndpointAddress, aMetadata);
+    final AS2ClientSettings aSettings = AS2SettingsProvider.createAS2ClientSettings (aRecipientEndpoint, aMetadata);
     final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aSettings, aRequest);
     if (aResponse.hasException ())
-      s_aLogger.error ("Error sending to " + sAPEndpointAddress + ": " + aResponse.getAsString ());
+      s_aLogger.error ("Error sending to " + aSettings.getDestinationAS2URL () + ": " + aResponse.getAsString ());
     else
-      s_aLogger.info ("Successfully forwarded message to " + sAPEndpointAddress);
+      s_aLogger.info ("Successfully forwarded message to " + aSettings.getDestinationAS2URL ());
   }
 
   private void _sendToInbox (@Nonnull final IMessageMetadata aMetadata,
@@ -573,11 +594,10 @@ public class LimeService
       {
         final Node aElement = (Node) CollectionHelper.getFirstElement (aObjects);
         final Document aDocument = aElement.getOwnerDocument ();
-        final Document metadataDocument = MessageMetadataHelper.createHeadersDocument (aMetadata);
+        final Document aMetadataDocument = MessageMetadataHelper.createHeadersDocument (aMetadata);
 
-        final String sStorageRoot = ((ServletContext) webServiceContext.getMessageContext ()
-                                                                       .get (MessageContext.SERVLET_CONTEXT)).getRealPath ("/");
-        new LimeStorage (sStorageRoot).saveDocument (sStorageChannelID, sMessageID, metadataDocument, aDocument);
+        final String sStorageRoot = _getServletContext ().getRealPath ("/");
+        new LimeStorage (sStorageRoot).saveDocument (sStorageChannelID, sMessageID, aMetadataDocument, aDocument);
       }
     }
     catch (final Exception ex)
@@ -588,19 +608,18 @@ public class LimeService
   }
 
   @Nullable
-  private static String _getAccessPointUrl (final ParticipantIdentifierType aRecipientId,
-                                            final DocumentIdentifierType aDocumentID,
-                                            final ProcessIdentifierType aProcessID,
+  private static EndpointType _getEndpoint (@Nonnull final IParticipantIdentifier aRecipientId,
+                                            @Nonnull final IDocumentTypeIdentifier aDocumentID,
+                                            @Nonnull final IProcessIdentifier aProcessID,
                                             @Nonnull final ISMLInfo aSMLInfo)
   {
-    String ret = null;
+    EndpointType ret = null;
     try
     {
-      ret = new SMPClientReadOnly (aRecipientId,
-                                   aSMLInfo).getEndpointAddress (aRecipientId,
-                                                                 aDocumentID,
-                                                                 aProcessID,
-                                                                 ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
+      ret = new SMPClientReadOnly (aRecipientId, aSMLInfo).getEndpoint (aRecipientId,
+                                                                        aDocumentID,
+                                                                        aProcessID,
+                                                                        ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
       if (ret == null)
         s_aLogger.error ("Failed to resolve AP endpoint url for recipient " +
                          aRecipientId +

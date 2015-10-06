@@ -122,13 +122,14 @@ public final class LimeServerConfiguration
 
   /**
    * @return The value of {@link #getSMLID()} resolved to an {@link ESML} value.
-   *         May be <code>null</code>.
+   *         If no value or an invalid value is provided, the fallback value
+   *         {@link ESML#DIGIT_PRODUCTION} is returned.
    */
-  @Nullable
+  @Nonnull
   public static ESML getSML ()
   {
     final String sSMLID = getSMLID ();
-    return ESML.getFromIDOrNull (sSMLID);
+    return ESML.getFromIDOrDefault (sSMLID, ESML.DIGIT_PRODUCTION);
   }
 
   @Nullable

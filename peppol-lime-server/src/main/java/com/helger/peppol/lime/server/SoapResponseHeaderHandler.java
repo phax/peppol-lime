@@ -65,8 +65,8 @@ import org.w3c.dom.NodeList;
 import com.helger.peppol.lime.api.CTransportIdentifiers;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class SoapResponseHeaderHandler implements SOAPHandler <SOAPMessageContext>
 {

@@ -46,6 +46,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -57,19 +58,22 @@ import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.peppol.lime.api.IMessageMetadata;
-import com.helger.peppol.sml.ESML;
-import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.EndpointType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
+import com.helger.peppol.utils.W3CEndpointReferenceHelper;
 
 /**
  * Helper class to provide the {@link AS2ClientSettings} to be used.
  *
  * @author Philip Helger
  */
+@Immutable
 final class AS2SettingsProvider
 {
+  private AS2SettingsProvider ()
+  {}
+
   /**
    * @param aCert
    *        Source certificate. May not be <code>null</code>.
@@ -84,25 +88,26 @@ final class AS2SettingsProvider
     return IETFUtils.valueToString (cn.getFirst ().getValue ());
   }
 
+  /**
+   * Build the AS2 client settings to be used.
+   *
+   * @param aRecipientEndpoint
+   *        The endpoint of the recipient as determined by an SMP lookup
+   *        previously
+   * @param aMetadata
+   *        The metadata of the document to be transmitted
+   * @return The {@link AS2ClientSettings} to be used and never
+   *         <code>null</code>.
+   * @throws SMPClientException
+   * @throws CertificateException
+   */
   @Nonnull
-  public static AS2ClientSettings createAS2ClientSettings (@Nonnull final String sAPEndpointAddress,
+  public static AS2ClientSettings createAS2ClientSettings (@Nonnull final EndpointType aRecipientEndpoint,
                                                            @Nonnull final IMessageMetadata aMetadata) throws SMPClientException,
                                                                                                       CertificateException
   {
-    // Query SMP
-    final ESML eSML = LimeServerConfiguration.getSML ();
-    if (eSML == null)
-      throw new IllegalStateException ("The configuration of the SML is invalid!");
-    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aMetadata.getRecipientID (), eSML);
-    final EndpointType aEndpoint = aSMPClient.getEndpoint (aMetadata.getRecipientID (),
-                                                           aMetadata.getDocumentTypeID (),
-                                                           aMetadata.getProcessID (),
-                                                           ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
-    if (aEndpoint == null)
-      throw new NullPointerException ("Failed to resolve endpoint for docType/process");
-
     // Extract from SMP response
-    final X509Certificate aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aEndpoint);
+    final X509Certificate aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aRecipientEndpoint);
     final String sReceiverID = _getCN (aReceiverCertificate);
     final String sReceiverKeyAlias = sReceiverID;
 
@@ -117,7 +122,9 @@ final class AS2SettingsProvider
                              LimeServerConfiguration.getAS2SenderKeyAlias ());
 
     // Dynamic receiver
-    aSettings.setReceiverData (sReceiverID, sReceiverKeyAlias, sAPEndpointAddress);
+    aSettings.setReceiverData (sReceiverID,
+                               sReceiverKeyAlias,
+                               W3CEndpointReferenceHelper.getAddress (aRecipientEndpoint.getEndpointReference ()));
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
     // AS2 stuff - no need to change anything in this block
