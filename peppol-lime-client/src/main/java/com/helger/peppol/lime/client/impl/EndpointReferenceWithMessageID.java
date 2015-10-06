@@ -54,12 +54,13 @@ public final class EndpointReferenceWithMessageID extends EndpointReference impl
 {
   private String m_sMessageID;
 
+  @Nullable
   public String getMessageID ()
   {
     return m_sMessageID;
   }
 
-  public void setMessageID (final String sMessageID)
+  public void setMessageID (@Nullable final String sMessageID)
   {
     m_sMessageID = sMessageID;
   }

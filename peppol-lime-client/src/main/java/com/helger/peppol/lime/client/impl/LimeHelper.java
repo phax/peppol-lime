@@ -60,8 +60,8 @@ import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
 import com.helger.peppol.lime.client.ws.LimeClientService;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class LimeHelper
 {

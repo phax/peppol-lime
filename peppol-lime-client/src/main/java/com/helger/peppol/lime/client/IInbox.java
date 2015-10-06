@@ -45,27 +45,27 @@ import java.util.List;
 import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface IInbox
 {
   // Returns a reference to all messages in the inbox
-  List <IMessageReference> getMessageList (IReadonlyUsernamePWCredentials credentials,
-                                           IEndpointReference endpointReference) throws MessageException;
+  List <IMessageReference> getMessageList (IReadonlyUsernamePWCredentials aCredentials,
+                                           IEndpointReference aEndpointReference) throws MessageException;
 
   // Returns a reference to one page of messages in the inbox, pagenumbers
   // starts at zero
-  List <IMessageReference> getMessageListPage (IReadonlyUsernamePWCredentials credentials,
-                                               IEndpointReference endpointReference,
-                                               int pageNumber) throws MessageException;
+  List <IMessageReference> getMessageListPage (IReadonlyUsernamePWCredentials aCredentials,
+                                               IEndpointReference aEndpointReference,
+                                               int nPageNumber) throws MessageException;
 
   // Returns the message identified by the message reference. Messages may be
   // retrieved more than once.
-  IMessage getMessage (IReadonlyUsernamePWCredentials credentials,
-                       IMessageReference messageReferenceInterface) throws MessageException;
+  IMessage getMessage (IReadonlyUsernamePWCredentials aCredentials,
+                       IMessageReference aMessageReference) throws MessageException;
 
   // Messages must be deleted when they are no longer needed.
-  void deleteMessage (IReadonlyUsernamePWCredentials credentials,
-                      IMessageReference messageReferenceInterface) throws MessageException;
+  void deleteMessage (IReadonlyUsernamePWCredentials aCredentials,
+                      IMessageReference aMessageReference) throws MessageException;
 }

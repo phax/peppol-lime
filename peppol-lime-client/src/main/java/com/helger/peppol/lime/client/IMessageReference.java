@@ -41,16 +41,16 @@
 package com.helger.peppol.lime.client;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface IMessageReference
 {
   IEndpointReference getEndpointReference ();
 
-  void setEndpointReference (IEndpointReference endpointReference);
+  void setEndpointReference (IEndpointReference aEndpointReference);
 
   String getMessageID ();
 
-  void setMessageId (String messageId);
+  void setMessageId (String sMessageId);
 }

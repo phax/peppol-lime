@@ -40,17 +40,21 @@
  */
 package com.helger.peppol.lime.client;
 
+import javax.annotation.Nullable;
+
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface IEndpointReference
 {
+  @Nullable
   String getAddress ();
 
-  void setAddress (String address);
+  void setAddress (@Nullable String sAddress);
 
+  @Nullable
   String getChannelID ();
 
-  void setChannelID (String channelID);
+  void setChannelID (@Nullable String sChannelID);
 }

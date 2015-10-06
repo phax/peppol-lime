@@ -40,35 +40,45 @@
  */
 package com.helger.peppol.lime.client.impl;
 
+import javax.annotation.Nullable;
+
+import com.helger.commons.string.ToStringGenerator;
 import com.helger.peppol.lime.client.IEndpointReference;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class EndpointReference implements IEndpointReference
 {
-
   private String m_sAddress;
   private String m_sChannelID;
 
+  @Nullable
   public String getAddress ()
   {
     return m_sAddress;
   }
 
-  public void setAddress (final String address)
+  public void setAddress (@Nullable final String sAddress)
   {
-    m_sAddress = address;
+    m_sAddress = sAddress;
   }
 
+  @Nullable
   public String getChannelID ()
   {
     return m_sChannelID;
   }
 
-  public void setChannelID (final String channelID)
+  public void setChannelID (@Nullable final String sChannelID)
   {
-    m_sChannelID = channelID;
+    m_sChannelID = sChannelID;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("Address", m_sAddress).append ("ChannelID", m_sChannelID).toString ();
   }
 }

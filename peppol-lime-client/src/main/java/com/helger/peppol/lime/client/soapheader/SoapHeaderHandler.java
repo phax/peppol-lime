@@ -64,8 +64,8 @@ import com.helger.peppol.identifier.ObjectFactory;
 import com.helger.peppol.identifier.ParticipantIdentifierType;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext>
 {

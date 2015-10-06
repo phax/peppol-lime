@@ -49,8 +49,8 @@ import com.helger.peppol.identifier.IParticipantIdentifier;
 import com.helger.peppol.identifier.IProcessIdentifier;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface IMessage
 {
@@ -60,21 +60,21 @@ public interface IMessage
 
   IParticipantIdentifier getSender ();
 
-  void setSender (IParticipantIdentifier sender);
+  void setSender (IParticipantIdentifier aSenderID);
 
   IParticipantIdentifier getReceiver ();
 
-  void setReceiver (IParticipantIdentifier receiver);
+  void setReceiver (IParticipantIdentifier aReceiverID);
 
   IDocumentTypeIdentifier getDocumentType ();
 
-  void setDocumentType (IDocumentTypeIdentifier documentType);
+  void setDocumentType (IDocumentTypeIdentifier aDocumentTypeID);
 
   Document getDocument ();
 
-  void setDocument (Document document);
+  void setDocument (Document aDocument);
 
   IProcessIdentifier getProcessType ();
 
-  void setProcessType (IProcessIdentifier processType);
+  void setProcessType (IProcessIdentifier aProcessID);
 }

@@ -53,8 +53,8 @@ import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
 import com.helger.peppol.lime.api.ObjectFactory;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
 public final class CLimeIdentifiers

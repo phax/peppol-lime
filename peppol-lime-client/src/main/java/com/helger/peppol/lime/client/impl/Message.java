@@ -51,8 +51,8 @@ import com.helger.peppol.identifier.IProcessIdentifier;
 import com.helger.peppol.lime.client.IMessage;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class Message implements IMessage
 {

@@ -49,8 +49,8 @@ import javax.xml.ws.handler.Handler;
 import org.w3c.dom.Element;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class SoapHeaderMapper
 {

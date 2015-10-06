@@ -43,13 +43,25 @@ package com.helger.peppol.lime.client;
 import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface IOutbox
 {
-  // Sends a message. A new unique message ID is created and returned.
-  String sendMessage (IReadonlyUsernamePWCredentials credentials,
-                      IMessage message,
-                      IEndpointReference endpointReferenceInterface) throws MessageException;
+  /**
+   * Sends a message. A new unique message ID is created and returned.
+   * 
+   * @param aCredentials
+   *        Credentials
+   * @param aMessage
+   *        Message to be send
+   * @param aEndpointReference
+   *        Endpoint reference to target
+   * @return Created uniqued message ID
+   * @throws MessageException
+   *         In case of an error
+   */
+  String sendMessage (IReadonlyUsernamePWCredentials aCredentials,
+                      IMessage aMessage,
+                      IEndpointReference aEndpointReference) throws MessageException;
 }

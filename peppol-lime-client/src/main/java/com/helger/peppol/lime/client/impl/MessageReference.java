@@ -44,8 +44,8 @@ import com.helger.peppol.lime.client.IEndpointReference;
 import com.helger.peppol.lime.client.IMessageReference;
 
 /**
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class MessageReference implements IMessageReference
 {
