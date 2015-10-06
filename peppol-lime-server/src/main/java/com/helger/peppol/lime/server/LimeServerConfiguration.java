@@ -110,12 +110,20 @@ public final class LimeServerConfiguration
     return s_aConfigFile;
   }
 
+  /**
+   * @return The ID of the SML to be used. Should correspond the ID of the
+   *         entries in the {@link ESML} enum.
+   */
   @Nullable
   public static String getSMLID ()
   {
     return s_aConfigFile.getString ("sml.id");
   }
 
+  /**
+   * @return The value of {@link #getSMLID()} resolved to an {@link ESML} value.
+   *         May be <code>null</code>.
+   */
   @Nullable
   public static ESML getSML ()
   {
@@ -153,9 +161,14 @@ public final class LimeServerConfiguration
     return s_aConfigFile.getString ("as2.sender.keyalias");
   }
 
+  /**
+   * @return The signing algorithm to be used. Defaults to "sha1" if nothing is
+   *         specified.
+   */
+  @Nonnull
   public static ECryptoAlgorithmSign getAS2SignAlgorithm ()
   {
     final String sAlgo = s_aConfigFile.getString ("as2.sign.algorithm");
-    return ECryptoAlgorithmSign.getFromIDOrNull (sAlgo);
+    return ECryptoAlgorithmSign.getFromIDOrDefault (sAlgo, ECryptoAlgorithmSign.DIGEST_SHA1);
   }
 }
