@@ -60,7 +60,6 @@ import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.peppol.lime.api.IMessageMetadata;
 import com.helger.peppol.smp.EndpointType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
-import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.utils.W3CEndpointReferenceHelper;
 
 /**
@@ -98,13 +97,12 @@ final class AS2SettingsProvider
    *        The metadata of the document to be transmitted
    * @return The {@link AS2ClientSettings} to be used and never
    *         <code>null</code>.
-   * @throws SMPClientException
    * @throws CertificateException
+   *         In case receiving the public certificate from the endpoint fails
    */
   @Nonnull
   public static AS2ClientSettings createAS2ClientSettings (@Nonnull final EndpointType aRecipientEndpoint,
-                                                           @Nonnull final IMessageMetadata aMetadata) throws SMPClientException,
-                                                                                                      CertificateException
+                                                           @Nonnull final IMessageMetadata aMetadata) throws CertificateException
   {
     // Extract from SMP response
     final X509Certificate aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aRecipientEndpoint);
