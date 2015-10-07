@@ -55,6 +55,7 @@ public class MessageReference implements IMessageReference
   private IEndpointReference m_aEndpointReference;
   private String m_sMessageID;
 
+  @Nullable
   public IEndpointReference getEndpointReference ()
   {
     return m_aEndpointReference;

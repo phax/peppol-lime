@@ -43,6 +43,7 @@ package com.helger.peppol.lime.client.soapheader;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -60,6 +61,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 import com.helger.jaxb.JAXBContextCache;
+import com.helger.jaxb.JAXBMarshallerHelper;
 import com.helger.peppol.identifier.ObjectFactory;
 import com.helger.peppol.identifier.ParticipantIdentifierType;
 
@@ -75,13 +77,13 @@ final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext>
   private final String m_sMessageID;
   private final List <Element> m_aReferenceParameters;
 
-  public SoapHeaderHandler (final String sChannelID,
-                            final String sMessageID,
-                            @Nullable final List <Element> referenceParameters)
+  public SoapHeaderHandler (@Nullable final String sChannelID,
+                            @Nullable final String sMessageID,
+                            @Nullable final List <Element> aReferenceParameters)
   {
     m_sMessageID = sMessageID;
     m_sChannelID = sChannelID;
-    m_aReferenceParameters = referenceParameters;
+    m_aReferenceParameters = aReferenceParameters;
   }
 
   public boolean handleMessage (final SOAPMessageContext smc)
@@ -91,8 +93,8 @@ final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext>
       // Outgoing message...
       try
       {
-        final SOAPEnvelope envelope = smc.getMessage ().getSOAPPart ().getEnvelope ();
-        createSOAPHeader (envelope);
+        final SOAPEnvelope aEnvelope = smc.getMessage ().getSOAPPart ().getEnvelope ();
+        createSOAPHeader (aEnvelope);
       }
       catch (final Exception ex)
       {
@@ -115,48 +117,39 @@ final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext>
   public void close (final MessageContext context)
   {}
 
-  private void createSOAPHeader (final SOAPEnvelope envelope) throws Exception
+  private void createSOAPHeader (@Nonnull final SOAPEnvelope aEnvelope) throws Exception
   {
-    SOAPHeader header = envelope.getHeader ();
-    if (header == null)
-    {
-      header = envelope.addHeader ();
-    }
+    SOAPHeader aSoapHeader = aEnvelope.getHeader ();
+    if (aSoapHeader == null)
+      aSoapHeader = aEnvelope.addHeader ();
 
-    final ObjectFactory objFactory = new ObjectFactory ();
-    Marshaller marshaller = JAXBContextCache.getInstance ()
-                                            .getFromCache (ParticipantIdentifierType.class.getPackage ())
-                                            .createMarshaller ();
-
-    marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+    final ObjectFactory aObjFactory = new ObjectFactory ();
+    Marshaller aMarshaller = JAXBContextCache.getInstance ()
+                                             .getFromCache (ParticipantIdentifierType.class.getPackage ())
+                                             .createMarshaller ();
+    JAXBMarshallerHelper.setFormattedOutput (aMarshaller, true);
 
     // java.lang. classes cannot be used with JAXBContextCache
-    marshaller = JAXBContext.newInstance (String.class).createMarshaller ();
+    aMarshaller = JAXBContext.newInstance (String.class).createMarshaller ();
     if (m_sChannelID != null)
-    {
-      marshaller.marshal (objFactory.createChannelIdentifier (m_sChannelID), new DOMResult (header));
-    }
+      aMarshaller.marshal (aObjFactory.createChannelIdentifier (m_sChannelID), new DOMResult (aSoapHeader));
     if (m_sMessageID != null)
-    {
-      marshaller.marshal (objFactory.createMessageIdentifier (m_sMessageID), new DOMResult (header));
-    }
+      aMarshaller.marshal (aObjFactory.createMessageIdentifier (m_sMessageID), new DOMResult (aSoapHeader));
 
     if (m_aReferenceParameters != null)
-    {
       try
       {
-        for (final Element node : m_aReferenceParameters)
+        for (final Element aRefParamElement : m_aReferenceParameters)
         {
-          final SOAPElement aSOAPElement = header.addChildElement (new QName (node.getNamespaceURI (),
-                                                                              node.getLocalName ()));
-          aSOAPElement.setTextContent (node.getTextContent ());
+          final SOAPElement aSOAPElement = aSoapHeader.addChildElement (new QName (aRefParamElement.getNamespaceURI (),
+                                                                                   aRefParamElement.getLocalName ()));
+          aSOAPElement.setTextContent (aRefParamElement.getTextContent ());
         }
       }
       catch (final Exception ex)
       {
-        s_aLogger.info ("Unable to set reference parameters", ex);
+        s_aLogger.error ("Unable to set reference parameters: " + m_aReferenceParameters, ex);
         throw ex;
       }
-    }
   }
 }

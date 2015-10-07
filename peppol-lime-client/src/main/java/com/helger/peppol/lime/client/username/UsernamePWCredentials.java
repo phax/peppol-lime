@@ -47,53 +47,40 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Default implementation of the {@link IMutableUsernamePWCredentials}.
+ * Mutable implementation of the {@link IUsernamePWCredentials}.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
-public final class UsernamePWCredentials implements IMutableUsernamePWCredentials
+public final class UsernamePWCredentials implements IUsernamePWCredentials
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (UsernamePWCredentials.class);
-  private String m_sUsername;
-  private String m_sPassword;
-
-  public UsernamePWCredentials ()
-  {}
+  private final String m_sUsername;
+  private final String m_sPassword;
 
   public UsernamePWCredentials (@Nonnull @Nonempty final String sUsername, @Nullable final String sPassword)
   {
-    setUsername (sUsername);
-    setPassword (sPassword);
-  }
-
-  public void setUsername (@Nonnull @Nonempty final String sUsername)
-  {
-    if (StringHelper.hasNoText (sUsername))
-      throw new IllegalArgumentException ("No user name given!");
+    ValueEnforcer.notEmpty (sUsername, "Username");
     if (sUsername.indexOf (':') >= 0)
       s_aLogger.error ("The user name '" +
                        sUsername +
                        "' contains a ':' character which prevents it from being correctly converted to an HTTP basic authentication value!!!");
     m_sUsername = sUsername;
+    m_sPassword = sPassword;
   }
 
-  @Nullable
+  @Nonnull
+  @Nonempty
   public String getUsername ()
   {
     return m_sUsername;
-  }
-
-  public void setPassword (@Nullable final String sPassword)
-  {
-    m_sPassword = sPassword;
   }
 
   @Nullable
@@ -107,7 +94,7 @@ public final class UsernamePWCredentials implements IMutableUsernamePWCredential
   {
     if (o == this)
       return true;
-    if (!(o instanceof UsernamePWCredentials))
+    if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final UsernamePWCredentials rhs = (UsernamePWCredentials) o;
     return EqualsHelper.equals (m_sUsername, rhs.m_sUsername) && EqualsHelper.equals (m_sPassword, rhs.m_sPassword);

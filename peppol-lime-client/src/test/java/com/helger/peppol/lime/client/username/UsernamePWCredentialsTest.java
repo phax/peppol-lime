@@ -42,12 +42,10 @@ package com.helger.peppol.lime.client.username;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 import com.helger.commons.mock.CommonsTestHelper;
-import com.helger.peppol.lime.client.username.UsernamePWCredentials;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -62,42 +60,18 @@ public final class UsernamePWCredentialsTest
   @SuppressFBWarnings ("NP_NONNULL_PARAM_VIOLATION")
   public void testDefault ()
   {
-    final UsernamePWCredentials uc = new UsernamePWCredentials ();
-    assertNull (uc.getUsername ());
+    UsernamePWCredentials uc = new UsernamePWCredentials ("bla", null);
+    assertEquals ("bla", uc.getUsername ());
     assertNull (uc.getPassword ());
 
-    uc.setUsername ("abc");
-    assertEquals ("abc", uc.getUsername ());
-    try
-    {
-      uc.setUsername (null);
-      fail ();
-    }
-    catch (final IllegalArgumentException ex)
-    {}
-    assertEquals ("abc", uc.getUsername ());
-
     // Logged warning only:
-    uc.setUsername ("a:b");
+    uc = new UsernamePWCredentials ("a:b", null);
     assertEquals ("a:b", uc.getUsername ());
   }
 
   @Test
   public void testAll ()
   {
-    final UsernamePWCredentials uc = new UsernamePWCredentials ("name", "pw");
-    assertEquals ("name", uc.getUsername ());
-    assertEquals ("pw", uc.getPassword ());
-    uc.setUsername ("name2");
-    assertEquals ("name2", uc.getUsername ());
-    assertEquals ("pw", uc.getPassword ());
-    uc.setPassword ("pw2");
-    assertEquals ("name2", uc.getUsername ());
-    assertEquals ("pw2", uc.getPassword ());
-    uc.setPassword (null);
-    assertEquals ("name2", uc.getUsername ());
-    assertNull (uc.getPassword ());
-
     // Test equals/hashcode etc.
     CommonsTestHelper.testDefaultImplementationWithEqualContentObject (new UsernamePWCredentials ("name", "pw"),
                                                                        new UsernamePWCredentials ("name", "pw"));

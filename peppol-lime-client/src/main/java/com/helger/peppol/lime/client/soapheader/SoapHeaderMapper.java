@@ -42,6 +42,8 @@ package com.helger.peppol.lime.client.soapheader;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.Handler;
@@ -57,15 +59,15 @@ public final class SoapHeaderMapper
   private SoapHeaderMapper ()
   {}
 
-  public static void setupHandlerChain (final BindingProvider aBP,
-                                        final String sChannelID,
-                                        final String sMessageID,
-                                        final List <Element> aReferenceParameters)
+  public static void setupHandlerChain (@Nonnull final BindingProvider aBP,
+                                        @Nullable final String sChannelID,
+                                        @Nullable final String sMessageID,
+                                        @Nullable final List <Element> aReferenceParameters)
   {
     final Binding aBinding = aBP.getBinding ();
     @SuppressWarnings ("rawtypes")
-    final List <Handler> handlerList = aBinding.getHandlerChain ();
-    handlerList.add (new SoapHeaderHandler (sChannelID, sMessageID, aReferenceParameters));
-    aBinding.setHandlerChain (handlerList);
+    final List <Handler> aHandlerList = aBinding.getHandlerChain ();
+    aHandlerList.add (new SoapHeaderHandler (sChannelID, sMessageID, aReferenceParameters));
+    aBinding.setHandlerChain (aHandlerList);
   }
 }
