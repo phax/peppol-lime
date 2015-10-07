@@ -41,8 +41,8 @@
 package com.helger.peppol.lime.server.storage;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -59,7 +59,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FileOperations;
-import com.helger.commons.io.file.filter.FileFilterFilenameEndsWith;
+import com.helger.commons.io.file.iterate.FileSystemIterator;
 import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.datetime.PDTFactory;
@@ -70,9 +70,13 @@ import com.helger.datetime.PDTFactory;
  */
 public final class LimeStorage
 {
-  private static final String EXT_METADATA = ".metadata";
-  private static final String EXT_PAYLOAD = ".payload";
-  private static final String INBOX_DIR = "inbox";
+  /** Filename extension for metadata file */
+  public static final String EXT_METADATA = ".metadata";
+  /** Filename extension for payload file */
+  public static final String EXT_PAYLOAD = ".payload";
+  /** Name of the inbox directory */
+  public static final String INBOX_DIR = "inbox";
+
   private static final long MESSAGE_INVALID_TIME_IN_MILLIS = CGlobal.MILLISECONDS_PER_HOUR * 2;
   private static final Logger s_aLogger = LoggerFactory.getLogger (LimeStorage.class);
 
@@ -81,6 +85,59 @@ public final class LimeStorage
   public LimeStorage (@Nonnull @Nonempty final String sStorePath)
   {
     m_sStorePath = ValueEnforcer.notEmpty (sStorePath, "StorePath");
+  }
+
+  @Nonnull
+  private static String _removeSpecialChars (@Nonnull final String sFileOrDirName)
+  {
+    return sFileOrDirName.replace (':', '_');
+  }
+
+  @Nonnull
+  private static String _getMessageIDFromPayloadFile (@Nonnull final File aPayloadFile)
+  {
+    final String sFilename = aPayloadFile.getName ();
+    String sMessageID = sFilename.substring (0, sFilename.length () - EXT_PAYLOAD.length ());
+    sMessageID = sMessageID.replace ('_', ':');
+    return sMessageID;
+  }
+
+  @Nonnull
+  private File _getChannelInboxDir (@Nonnull final String sChannelID)
+  {
+    final File aInboxDir = new File (m_sStorePath, INBOX_DIR);
+    FileOperations.createDirIfNotExisting (aInboxDir);
+
+    final String sRealChannelID = _removeSpecialChars (sChannelID);
+    final File aChannelDir = new File (aInboxDir, sRealChannelID);
+    FileOperations.createDirIfNotExisting (aChannelDir);
+    if (!aChannelDir.exists ())
+      throw new IllegalStateException ("Inbox for channel \"" +
+                                       sRealChannelID +
+                                       "\" could not be found or created: " +
+                                       aChannelDir.getAbsolutePath ());
+    return aChannelDir;
+  }
+
+  @Nonnull
+  private static File _getMetadataFile (@Nonnull final File aChannelInboxDir, @Nonnull final String sMessageID)
+  {
+    final String sRealMessageID = _removeSpecialChars (sMessageID);
+    return new File (aChannelInboxDir, sRealMessageID + EXT_METADATA);
+  }
+
+  @Nonnull
+  private static File _getPayloadFile (@Nonnull final File aChannelInboxDir, @Nonnull final String sMessageID)
+  {
+    final String sRealMessageID = _removeSpecialChars (sMessageID);
+    final File aFile = new File (aChannelInboxDir, sRealMessageID + EXT_PAYLOAD);
+    s_aLogger.info ("Getting payload file: " + aFile.getAbsolutePath ());
+    return aFile;
+  }
+
+  private static void _writeDocumentToFile (@Nonnull final Document aDoc, @Nonnull final File aMessageFile)
+  {
+    XMLWriter.writeToStream (aDoc, FileHelper.getOutputStream (aMessageFile));
   }
 
   public void saveDocument (@Nonnull final String sChannelID,
@@ -99,7 +156,6 @@ public final class LimeStorage
                                        sMessageID +
                                        " in inbox for channel " +
                                        sChannelID);
-
     }
     if (!aPayloadFile.createNewFile ())
     {
@@ -118,8 +174,8 @@ public final class LimeStorage
     }
     catch (final RuntimeException ex)
     {
-      aMetadataFile.delete ();
-      aPayloadFile.delete ();
+      FileOperations.deleteFileIfExisting (aMetadataFile);
+      FileOperations.deleteFileIfExisting (aPayloadFile);
       throw ex;
     }
   }
@@ -136,20 +192,20 @@ public final class LimeStorage
       final boolean bPayloadFileExists = aPayloadFile.exists ();
       if (bMetadataFileExists && bPayloadFileExists)
       {
-        aMetadataFile.delete ();
-        aPayloadFile.delete ();
+        FileOperations.deleteFile (aMetadataFile);
+        FileOperations.deleteFile (aPayloadFile);
       }
       else
         if (bMetadataFileExists)
         {
           s_aLogger.warn ("Only the metadata file exists. Payload file " + aPayloadFile + " is missing");
-          aMetadataFile.delete ();
+          FileOperations.deleteFile (aMetadataFile);
         }
         else
           if (bPayloadFileExists)
           {
             s_aLogger.warn ("Only the payload file exists. Metadata file " + aMetadataFile + " is missing");
-            aPayloadFile.delete ();
+            FileOperations.deleteFile (aPayloadFile);
           }
       // else none of the files exist
     }
@@ -158,22 +214,19 @@ public final class LimeStorage
   @Nonnull
   public String [] getMessageIDs (@Nonnull final String sChannelID)
   {
+    final List <String> ret = new ArrayList <> ();
     final File aChannnelDir = _getChannelInboxDir (sChannelID);
-    final List <File> aPayloadFiles = FileHelper.getDirectoryContent (aChannnelDir,
-                                                                      (FileFilter) new FileFilterFilenameEndsWith (EXT_PAYLOAD));
+    for (final File aPayloadFile : new FileSystemIterator (aChannnelDir))
+      if (aPayloadFile.isFile () && aPayloadFile.getName ().endsWith (EXT_PAYLOAD))
+      {
+        final String sMsgID = _getMessageIDFromPayloadFile (aPayloadFile);
 
-    final String [] aMessageIDs = new String [aPayloadFiles.size ()];
-    int nMsgIdx = 0;
-    for (final File aPayloadFile : aPayloadFiles)
-    {
-      final String sMsgID = _getMessageIDFromPayloadFile (aPayloadFile);
-
-      if ((System.currentTimeMillis () - aPayloadFile.lastModified ()) > MESSAGE_INVALID_TIME_IN_MILLIS)
-        deleteDocument (sChannelID, sMsgID);
-      else
-        aMessageIDs[nMsgIdx++] = sMsgID;
-    }
-    return aMessageIDs;
+        if ((System.currentTimeMillis () - aPayloadFile.lastModified ()) > MESSAGE_INVALID_TIME_IN_MILLIS)
+          deleteDocument (sChannelID, sMsgID);
+        else
+          ret.add (sMsgID);
+      }
+    return ret.toArray (new String [ret.size ()]);
   }
 
   @Nullable
@@ -209,58 +262,5 @@ public final class LimeStorage
     final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
     final File aPayloadFile = _getPayloadFile (aChannelInboxDir, sMessageID);
     return PDTFactory.createLocalDateTimeFromMillis (aPayloadFile.lastModified ());
-  }
-
-  @Nonnull
-  private static String _getMessageIDFromPayloadFile (@Nonnull final File aPayloadFile)
-  {
-    final String sFilename = aPayloadFile.getName ();
-    String sMessageID = sFilename.substring (0, sFilename.length () - EXT_PAYLOAD.length ());
-    sMessageID = sMessageID.replace ('_', ':');
-    return sMessageID;
-  }
-
-  @Nonnull
-  private static File _getMetadataFile (@Nonnull final File aChannelInboxDir, @Nonnull final String sMessageID)
-  {
-    final String sRealMessageID = _removeSpecialChars (sMessageID);
-    return new File (aChannelInboxDir, sRealMessageID + EXT_METADATA);
-  }
-
-  @Nonnull
-  private static File _getPayloadFile (@Nonnull final File aChannelInboxDir, @Nonnull final String sMessageID)
-  {
-    final String sRealMessageID = _removeSpecialChars (sMessageID);
-    final File aFile = new File (aChannelInboxDir, sRealMessageID + EXT_PAYLOAD);
-    s_aLogger.info ("Getting payload file: " + aFile.getAbsolutePath ());
-    return aFile;
-  }
-
-  @Nonnull
-  private File _getChannelInboxDir (@Nonnull final String sChannelID)
-  {
-    final File aInboxDir = new File (m_sStorePath, INBOX_DIR);
-    FileOperations.createDirIfNotExisting (aInboxDir);
-
-    final String sRealChannelID = _removeSpecialChars (sChannelID);
-    final File aChannelDir = new File (aInboxDir, sRealChannelID);
-    FileOperations.createDirIfNotExisting (aChannelDir);
-    if (!aChannelDir.exists ())
-      throw new IllegalStateException ("Inbox for channel \"" +
-                                       sRealChannelID +
-                                       "\" could not be found or created: " +
-                                       aChannelDir.getAbsolutePath ());
-    return aChannelDir;
-  }
-
-  @Nonnull
-  private static String _removeSpecialChars (@Nonnull final String sFileOrDirName)
-  {
-    return sFileOrDirName.replace (':', '_');
-  }
-
-  private static void _writeDocumentToFile (@Nonnull final Document aDoc, @Nonnull final File aMessageFile)
-  {
-    XMLWriter.writeToStream (aDoc, FileHelper.getOutputStream (aMessageFile));
   }
 }

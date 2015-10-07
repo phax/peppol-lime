@@ -62,7 +62,7 @@ import com.helger.peppol.lime.api.IMessageMetadata;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @ThreadSafe
-public final class MessageMetadataRAMStore
+final class MessageMetadataRAMStore
 {
   private static final ReadWriteLock s_aRWLock = new ReentrantReadWriteLock ();
   private static final Map <String, IMessageMetadata> s_aMap = new HashMap <String, IMessageMetadata> ();
@@ -71,17 +71,29 @@ public final class MessageMetadataRAMStore
   private MessageMetadataRAMStore ()
   {}
 
+  /**
+   * Create the internal key for storage.
+   *
+   * @param sMessageID
+   *        The message ID. May neither be <code>null</code> nor empty.
+   * @param sThisServiceURL
+   *        The service URL to use. May neither be <code>null</code> nor empty.
+   * @return The key to use.
+   */
   @Nonnull
-  private static String _getKey (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr)
+  @Nonempty
+  private static String _getKey (@Nonnull @Nonempty final String sMessageID,
+                                 @Nonnull @Nonempty final String sThisServiceURL)
   {
     ValueEnforcer.notEmpty (sMessageID, "MessageID");
-    ValueEnforcer.notEmpty (sURLStr, "UrlStr");
-    return sMessageID + sURLStr;
+    ValueEnforcer.notEmpty (sThisServiceURL, "ThisServiceURL");
+    return sMessageID + "::" + sThisServiceURL;
   }
 
-  public static boolean isStored (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr)
+  public static boolean isStored (@Nonnull @Nonempty final String sMessageID,
+                                  @Nonnull @Nonempty final String sThisServiceURL)
   {
-    final String sKey = _getKey (sMessageID, sURLStr);
+    final String sKey = _getKey (sMessageID, sThisServiceURL);
     s_aRWLock.readLock ().lock ();
     try
     {
@@ -95,12 +107,12 @@ public final class MessageMetadataRAMStore
 
   @Nonnull
   public static EChange createResource (@Nonnull @Nonempty final String sMessageID,
-                                        @Nonnull @Nonempty final String sURLStr,
+                                        @Nonnull @Nonempty final String sThisServiceURL,
                                         @Nonnull final IMessageMetadata aMetadata)
   {
     ValueEnforcer.notNull (aMetadata, "Metadata");
 
-    final String sKey = _getKey (sMessageID, sURLStr);
+    final String sKey = _getKey (sMessageID, sThisServiceURL);
     s_aRWLock.writeLock ().lock ();
     try
     {
@@ -117,9 +129,9 @@ public final class MessageMetadataRAMStore
 
   @Nullable
   public static IMessageMetadata getMessage (@Nonnull @Nonempty final String sMessageID,
-                                             @Nonnull @Nonempty final String sURLStr)
+                                             @Nonnull @Nonempty final String sThisServiceURL)
   {
-    final String sKey = _getKey (sMessageID, sURLStr);
+    final String sKey = _getKey (sMessageID, sThisServiceURL);
     s_aRWLock.readLock ().lock ();
     try
     {
@@ -131,9 +143,10 @@ public final class MessageMetadataRAMStore
     }
   }
 
-  public static void removeMessage (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr)
+  public static void removeMessage (@Nonnull @Nonempty final String sMessageID,
+                                    @Nonnull @Nonempty final String sThisServiceURL)
   {
-    final String sKey = _getKey (sMessageID, sURLStr);
+    final String sKey = _getKey (sMessageID, sThisServiceURL);
     s_aRWLock.readLock ().lock ();
     try
     {
