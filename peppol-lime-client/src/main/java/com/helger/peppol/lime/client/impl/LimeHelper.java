@@ -57,7 +57,7 @@ import com.helger.commons.random.VerySecureRandom;
 import com.helger.commons.string.StringHelper;
 import com.helger.peppol.lime.api.cert.AccessPointX509TrustManager;
 import com.helger.peppol.lime.api.wstransfer.Resource;
-import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
+import com.helger.peppol.lime.client.username.IUsernamePWCredentials;
 import com.helger.peppol.lime.client.ws.LimeClientService;
 
 /**
@@ -92,7 +92,7 @@ public final class LimeHelper
 
   @Nonnull
   public static Resource createServicePort (@Nonnull @Nonempty final String sAPStr,
-                                            @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws KeyManagementException,
+                                            @Nonnull final IUsernamePWCredentials aCredentials) throws KeyManagementException,
                                                                                                         NoSuchAlgorithmException
   {
     if (StringHelper.hasNoTextAfterTrim (sAPStr))

@@ -54,12 +54,12 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Default implementation of the {@link IUsernamePWCredentials}.
+ * Default implementation of the {@link IMutableUsernamePWCredentials}.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
-public final class UsernamePWCredentials implements IUsernamePWCredentials
+public final class UsernamePWCredentials implements IMutableUsernamePWCredentials
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (UsernamePWCredentials.class);
   private String m_sUsername;

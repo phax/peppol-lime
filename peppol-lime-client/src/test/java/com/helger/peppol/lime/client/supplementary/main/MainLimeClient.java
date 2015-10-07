@@ -76,7 +76,7 @@ import com.helger.peppol.lime.client.impl.Inbox;
 import com.helger.peppol.lime.client.impl.Message;
 import com.helger.peppol.lime.client.impl.MessageReference;
 import com.helger.peppol.lime.client.impl.Outbox;
-import com.helger.peppol.lime.client.username.IUsernamePWCredentials;
+import com.helger.peppol.lime.client.username.IMutableUsernamePWCredentials;
 import com.helger.peppol.lime.client.username.UsernamePWCredentials;
 import com.helger.peppol.utils.PeppolTechnicalSetup;
 
@@ -162,7 +162,7 @@ public final class MainLimeClient
     return messageID;
   }
 
-  private static IUsernamePWCredentials _createCredentials ()
+  private static IMutableUsernamePWCredentials _createCredentials ()
   {
     return new UsernamePWCredentials ("peppol", "peppol");
   }

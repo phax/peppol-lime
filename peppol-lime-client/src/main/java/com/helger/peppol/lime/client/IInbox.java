@@ -42,7 +42,7 @@ package com.helger.peppol.lime.client;
 
 import java.util.List;
 
-import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
+import com.helger.peppol.lime.client.username.IUsernamePWCredentials;
 
 /**
  * @author Ravnholt
@@ -51,21 +51,21 @@ import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
 public interface IInbox
 {
   // Returns a reference to all messages in the inbox
-  List <IMessageReference> getMessageList (IReadonlyUsernamePWCredentials aCredentials,
+  List <IMessageReference> getMessageList (IUsernamePWCredentials aCredentials,
                                            IEndpointReference aEndpointReference) throws MessageException;
 
   // Returns a reference to one page of messages in the inbox, pagenumbers
   // starts at zero
-  List <IMessageReference> getMessageListPage (IReadonlyUsernamePWCredentials aCredentials,
+  List <IMessageReference> getMessageListPage (IUsernamePWCredentials aCredentials,
                                                IEndpointReference aEndpointReference,
                                                int nPageNumber) throws MessageException;
 
   // Returns the message identified by the message reference. Messages may be
   // retrieved more than once.
-  IMessage getMessage (IReadonlyUsernamePWCredentials aCredentials,
+  IMessage getMessage (IUsernamePWCredentials aCredentials,
                        IMessageReference aMessageReference) throws MessageException;
 
   // Messages must be deleted when they are no longer needed.
-  void deleteMessage (IReadonlyUsernamePWCredentials aCredentials,
+  void deleteMessage (IUsernamePWCredentials aCredentials,
                       IMessageReference aMessageReference) throws MessageException;
 }

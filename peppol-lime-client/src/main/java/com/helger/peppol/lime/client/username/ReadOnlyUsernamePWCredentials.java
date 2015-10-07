@@ -40,18 +40,68 @@
  */
 package com.helger.peppol.lime.client.username;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
+import com.helger.commons.hashcode.HashCodeGenerator;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
- * A read-only version of username/password credentials.
+ * Default implementation of the {@link IUsernamePWCredentials}
+ * interface. It encapsulates an object of type {@link UsernamePWCredentials}
+ * and offers only the reading methods. This is done to avoid copying too much
+ * business logic.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IReadonlyUsernamePWCredentials extends IHasUsername
+@Immutable
+public final class ReadOnlyUsernamePWCredentials implements IUsernamePWCredentials
 {
-  /**
-   * @return The password to use
-   */
+  private final UsernamePWCredentials m_aCredentials;
+
+  public ReadOnlyUsernamePWCredentials (@Nonnull final IUsernamePWCredentials aCredentials)
+  {
+    this (aCredentials.getUsername (), aCredentials.getPassword ());
+  }
+
+  public ReadOnlyUsernamePWCredentials (@Nonnull final String sUsername, @Nullable final String sPassword)
+  {
+    m_aCredentials = new UsernamePWCredentials (sUsername, sPassword);
+  }
+
+  @Nonnull
+  public String getUsername ()
+  {
+    return m_aCredentials.getUsername ();
+  }
+
   @Nullable
-  String getPassword ();
+  public String getPassword ()
+  {
+    return m_aCredentials.getPassword ();
+  }
+
+  @Override
+  public boolean equals (final Object o)
+  {
+    if (o == this)
+      return true;
+    if (!(o instanceof ReadOnlyUsernamePWCredentials))
+      return false;
+    final ReadOnlyUsernamePWCredentials rhs = (ReadOnlyUsernamePWCredentials) o;
+    return m_aCredentials.equals (rhs.m_aCredentials);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return new HashCodeGenerator (this).append (m_aCredentials).getHashCode ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("username", getUsername ()).appendPassword ("password").toString ();
+  }
 }

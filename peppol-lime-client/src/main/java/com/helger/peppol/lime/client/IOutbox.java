@@ -42,7 +42,7 @@ package com.helger.peppol.lime.client;
 
 import javax.annotation.Nonnull;
 
-import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
+import com.helger.peppol.lime.client.username.IUsernamePWCredentials;
 
 /**
  * @author Ravnholt
@@ -63,7 +63,7 @@ public interface IOutbox
    * @throws MessageException
    *         In case of an error
    */
-  String sendMessage (@Nonnull IReadonlyUsernamePWCredentials aCredentials,
+  String sendMessage (@Nonnull IUsernamePWCredentials aCredentials,
                       @Nonnull IMessage aMessage,
                       @Nonnull IEndpointReference aEndpointReference) throws MessageException;
 }

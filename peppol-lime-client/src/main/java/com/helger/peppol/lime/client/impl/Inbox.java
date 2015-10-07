@@ -79,7 +79,7 @@ import com.helger.peppol.lime.client.IMessage;
 import com.helger.peppol.lime.client.IMessageReference;
 import com.helger.peppol.lime.client.MessageException;
 import com.helger.peppol.lime.client.soapheader.SoapHeaderMapper;
-import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
+import com.helger.peppol.lime.client.username.IUsernamePWCredentials;
 import com.helger.peppol.utils.W3CEndpointReferenceHelper;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.developer.JAXWSProperties;
@@ -92,7 +92,7 @@ public class Inbox implements IInbox
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (Inbox.class);
 
-  private static void _validateCredentialsObj (@Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws MessageException
+  private static void _validateCredentialsObj (@Nonnull final IUsernamePWCredentials aCredentials) throws MessageException
   {
     if (aCredentials == null)
       throw new MessageException ("Credentials can not be a null value");
@@ -117,7 +117,7 @@ public class Inbox implements IInbox
     return CollectionHelper.newList (node);
   }
 
-  public List <IMessageReference> getMessageList (final IReadonlyUsernamePWCredentials aCredentials,
+  public List <IMessageReference> getMessageList (final IUsernamePWCredentials aCredentials,
                                                   final IEndpointReference aEndpointReference) throws MessageException
   {
     _validateCredentialsObj (aCredentials);
@@ -139,7 +139,7 @@ public class Inbox implements IInbox
     }
   }
 
-  public List <IMessageReference> getMessageListPage (final IReadonlyUsernamePWCredentials aCredentials,
+  public List <IMessageReference> getMessageListPage (final IUsernamePWCredentials aCredentials,
                                                       final IEndpointReference aEndpointReference,
                                                       final int nPageNumber) throws MessageException
   {
@@ -156,7 +156,7 @@ public class Inbox implements IInbox
     }
   }
 
-  public IMessage getMessage (final IReadonlyUsernamePWCredentials aCredentials,
+  public IMessage getMessage (final IUsernamePWCredentials aCredentials,
                               final IMessageReference aMessageReference) throws MessageException
   {
     _validateCredentialsObj (aCredentials);
@@ -191,7 +191,7 @@ public class Inbox implements IInbox
     }
   }
 
-  public void deleteMessage (final IReadonlyUsernamePWCredentials aCredentials,
+  public void deleteMessage (final IUsernamePWCredentials aCredentials,
                              final IMessageReference aMessageReference) throws MessageException
   {
     _validateCredentialsObj (aCredentials);
@@ -216,7 +216,7 @@ public class Inbox implements IInbox
   // endpointreference og reference parameters
   private static boolean _getSinglePage (@Nonnull final IEndpointReference aEndpointReference,
                                          @Nullable final List <Element> aReferenceParameters,
-                                         @Nonnull final IReadonlyUsernamePWCredentials aCredentials,
+                                         @Nonnull final IUsernamePWCredentials aCredentials,
                                          @Nonnull final List <IMessageReference> aMessages) throws JAXBException,
                                                                                             DOMException,
                                                                                             KeyManagementException,

@@ -63,7 +63,7 @@ import com.helger.peppol.lime.client.IEndpointReference;
 import com.helger.peppol.lime.client.IMessage;
 import com.helger.peppol.lime.client.IOutbox;
 import com.helger.peppol.lime.client.MessageException;
-import com.helger.peppol.lime.client.username.IReadonlyUsernamePWCredentials;
+import com.helger.peppol.lime.client.username.IUsernamePWCredentials;
 import com.helger.peppol.utils.W3CEndpointReferenceHelper;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.developer.WSBindingProvider;
@@ -76,7 +76,7 @@ public final class Outbox implements IOutbox
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (Outbox.class);
 
-  private static void _validateCredentials (@Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws MessageException
+  private static void _validateCredentials (@Nonnull final IUsernamePWCredentials aCredentials) throws MessageException
   {
     if (aCredentials == null)
       throw new MessageException ("Credentials can not be a null value");
@@ -123,7 +123,7 @@ public final class Outbox implements IOutbox
   /*
    * Send a new message and return the created message ID
    */
-  public String sendMessage (@Nonnull final IReadonlyUsernamePWCredentials aCredentials,
+  public String sendMessage (@Nonnull final IUsernamePWCredentials aCredentials,
                              @Nonnull final IMessage aMessage,
                              @Nonnull final IEndpointReference aEndpointReference) throws MessageException
   {

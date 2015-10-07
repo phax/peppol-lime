@@ -42,66 +42,29 @@ package com.helger.peppol.lime.client.username;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
-import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.commons.annotation.Nonempty;
 
 /**
- * Default implementation of the {@link IReadonlyUsernamePWCredentials}
- * interface. It encapsulates an object of type {@link UsernamePWCredentials}
- * and offers only the reading methods. This is done to avoid copying too much
- * business logic.
+ * A writable version of the username/password credentials.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@Immutable
-public final class ReadonlyUsernamePWCredentials implements IReadonlyUsernamePWCredentials
+public interface IMutableUsernamePWCredentials extends IUsernamePWCredentials
 {
-  private final UsernamePWCredentials m_aCredentials;
+  /**
+   * Set the user name
+   * 
+   * @param sUsername
+   *        The new user name
+   */
+  void setUsername (@Nonnull @Nonempty String sUsername);
 
-  public ReadonlyUsernamePWCredentials (@Nonnull final IReadonlyUsernamePWCredentials aCredentials)
-  {
-    this (aCredentials.getUsername (), aCredentials.getPassword ());
-  }
-
-  public ReadonlyUsernamePWCredentials (@Nonnull final String sUsername, @Nullable final String sPassword)
-  {
-    m_aCredentials = new UsernamePWCredentials (sUsername, sPassword);
-  }
-
-  @Nonnull
-  public String getUsername ()
-  {
-    return m_aCredentials.getUsername ();
-  }
-
-  @Nullable
-  public String getPassword ()
-  {
-    return m_aCredentials.getPassword ();
-  }
-
-  @Override
-  public boolean equals (final Object o)
-  {
-    if (o == this)
-      return true;
-    if (!(o instanceof ReadonlyUsernamePWCredentials))
-      return false;
-    final ReadonlyUsernamePWCredentials rhs = (ReadonlyUsernamePWCredentials) o;
-    return m_aCredentials.equals (rhs.m_aCredentials);
-  }
-
-  @Override
-  public int hashCode ()
-  {
-    return new HashCodeGenerator (this).append (m_aCredentials).getHashCode ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return new ToStringGenerator (this).append ("username", getUsername ()).appendPassword ("password").toString ();
-  }
+  /**
+   * Set the password
+   * 
+   * @param sPassword
+   *        The new password
+   */
+  void setPassword (@Nullable String sPassword);
 }

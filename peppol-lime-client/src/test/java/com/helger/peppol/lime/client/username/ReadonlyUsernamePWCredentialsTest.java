@@ -45,10 +45,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.helger.commons.mock.CommonsTestHelper;
-import com.helger.peppol.lime.client.username.ReadonlyUsernamePWCredentials;
+import com.helger.peppol.lime.client.username.ReadOnlyUsernamePWCredentials;
 
 /**
- * Test class for class {@link ReadonlyUsernamePWCredentials}.
+ * Test class for class {@link ReadOnlyUsernamePWCredentials}.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -57,24 +57,24 @@ public final class ReadonlyUsernamePWCredentialsTest
   @Test
   public void testAll ()
   {
-    final ReadonlyUsernamePWCredentials uc = new ReadonlyUsernamePWCredentials ("name", "pw");
+    final ReadOnlyUsernamePWCredentials uc = new ReadOnlyUsernamePWCredentials ("name", "pw");
     assertEquals ("name", uc.getUsername ());
     assertEquals ("pw", uc.getPassword ());
 
-    CommonsTestHelper.testDefaultImplementationWithEqualContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
-                                                                       new ReadonlyUsernamePWCredentials ("name",
+    CommonsTestHelper.testDefaultImplementationWithEqualContentObject (new ReadOnlyUsernamePWCredentials ("name", "pw"),
+                                                                       new ReadOnlyUsernamePWCredentials ("name",
                                                                                                           "pw"));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name",
+    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (new ReadOnlyUsernamePWCredentials ("name",
                                                                                                               "pw"),
-                                                                           new ReadonlyUsernamePWCredentials ("name2",
+                                                                           new ReadOnlyUsernamePWCredentials ("name2",
                                                                                                               "pw"));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name",
+    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (new ReadOnlyUsernamePWCredentials ("name",
                                                                                                               "pw"),
-                                                                           new ReadonlyUsernamePWCredentials ("name",
+                                                                           new ReadOnlyUsernamePWCredentials ("name",
                                                                                                               "pww"));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name",
+    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (new ReadOnlyUsernamePWCredentials ("name",
                                                                                                               "pw"),
-                                                                           new ReadonlyUsernamePWCredentials ("name",
+                                                                           new ReadOnlyUsernamePWCredentials ("name",
                                                                                                               null));
   }
 }

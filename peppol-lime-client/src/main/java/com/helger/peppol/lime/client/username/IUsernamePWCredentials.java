@@ -40,31 +40,24 @@
  */
 package com.helger.peppol.lime.client.username;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.commons.annotation.Nonempty;
-
 /**
- * A writable version of the username/password credentials.
- * 
+ * A read-only version of username/password credentials.
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IUsernamePWCredentials extends IReadonlyUsernamePWCredentials
+public interface IUsernamePWCredentials
 {
   /**
-   * Set the user name
-   * 
-   * @param sUsername
-   *        The new user name
+   * @return The user name.
    */
-  void setUsername (@Nonnull @Nonempty String sUsername);
+  @Nullable
+  String getUsername ();
 
   /**
-   * Set the password
-   * 
-   * @param sPassword
-   *        The new password
+   * @return The password to use
    */
-  void setPassword (@Nullable String sPassword);
+  @Nullable
+  String getPassword ();
 }
