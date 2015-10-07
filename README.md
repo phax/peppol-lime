@@ -26,7 +26,8 @@ Details of the configuration items:
   * **`as2.sender.id`**: the AS2 ID of the sender. For PEPPOL this MUST be the common name contained in the certificate (`AP_....`).
   * **`as2.sender.email`**: the AS2 email address of the sender.
   * **`as2.sign.algorithm`**: the signing algorithm to use. Must be one of the following: `md5`, `sha1`, `sha-256`, `sha-384` or `sha-512`. If none of these values is specified, the value defaults to `sha1`.
-  * **`storage.path`**: the absolute directory where the LIME inbox directory should be created. If this property is not defined the path is defaulted to the value of `ServletContext.getRealPath ("/")`.
+  * **`lime.storage.path`**: the absolute directory where the LIME inbox directory should be created. If this property is not defined the path is defaulted to the value of `ServletContext.getRealPath ("/")`.
+  * **`lime.service.url`**: the absolute URL of LIME service how it is publicly accessible. If this property is not defined or empty the URL is dynamically build based on the current `HttpServletContext`.  If this property is defined, it must end with `/limeService` as this is the Webservice local name.
    
 
 ---

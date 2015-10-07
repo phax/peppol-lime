@@ -174,11 +174,24 @@ public final class LimeServerConfiguration
   }
 
   /**
-   * @return The storage path for the LIME messages.
+   * @return The storage path for the LIME messages. If this property is not
+   *         defined it should default to
+   *         <code>ServletContent.getRealPath ("/")</code>.
    */
   @Nullable
   public static String getStoragePath ()
   {
-    return s_aConfigFile.getString ("storage.path");
+    return s_aConfigFile.getString ("lime.storage.path");
+  }
+
+  /**
+   * @return The absolute URL of the LIME service. Must end with "/limeService".
+   *         If this property is not provided it must be assembled from the
+   *         current servlet request.
+   */
+  @Nullable
+  public static String getServiceURL ()
+  {
+    return s_aConfigFile.getString ("lime.service.url");
   }
 }

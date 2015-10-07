@@ -169,8 +169,12 @@ public class LimeService
   @Nonnull
   private String _getThisServiceURL ()
   {
-    // FIXME read this from the configuration file for easily correct handling
-    // of the endpoint URL
+    // First try from configuration file
+    final String sServiceURL = LimeServerConfiguration.getServiceURL ();
+    if (StringHelper.hasText (sServiceURL))
+      return sServiceURL;
+
+    // fallback to build manually
     final HttpServletRequest aServletRequest = _getServletRequest ();
     return aServletRequest.getScheme () +
            "://" +
@@ -185,6 +189,7 @@ public class LimeService
   @Nonnull
   private LimeStorage _createLimeStorage ()
   {
+    // Get value from configuration file
     String sStorePath = LimeServerConfiguration.getStoragePath ();
     if (sStorePath == null)
     {
