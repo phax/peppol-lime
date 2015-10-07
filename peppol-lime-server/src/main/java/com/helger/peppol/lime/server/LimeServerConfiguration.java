@@ -145,6 +145,12 @@ public final class LimeServerConfiguration
   }
 
   @Nullable
+  public static String getAS2SenderKeyAlias ()
+  {
+    return s_aConfigFile.getString ("as2.sender.keyalias");
+  }
+
+  @Nullable
   public static String getAS2SenderID ()
   {
     return s_aConfigFile.getString ("as2.sender.id");
@@ -154,12 +160,6 @@ public final class LimeServerConfiguration
   public static String getAS2SenderEmail ()
   {
     return s_aConfigFile.getString ("as2.sender.email");
-  }
-
-  @Nullable
-  public static String getAS2SenderKeyAlias ()
-  {
-    return s_aConfigFile.getString ("as2.sender.keyalias");
   }
 
   /**
