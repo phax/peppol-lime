@@ -198,21 +198,6 @@ public class LimeService
     return W3CEndpointReferenceHelper.createEndpointReference (sOurAPURL, aReferenceParameters);
   }
 
-  @Nonnull
-  private static CreateResponse _createCreateResponse (@Nonnull final String sOurAPURL,
-                                                       @Nonnull final String sChannelID,
-                                                       @Nonnull final String sMessageID)
-  {
-    final CreateResponse ret = new CreateResponse ();
-    {
-      final ResourceCreated aResourceCreated = new ResourceCreated ();
-      final W3CEndpointReference w3CEndpointReference = _createW3CEndpointReference (sOurAPURL, sChannelID, sMessageID);
-      aResourceCreated.getEndpointReference ().add (w3CEndpointReference);
-      ret.setResourceCreated (aResourceCreated);
-    }
-    return ret;
-  }
-
   /**
    * Called to initiate a new message. All standard PEPPOL SOAP headers except
    * messageID must be passed in. The messageID is created in this method and
@@ -252,7 +237,15 @@ public class LimeService
     if (aMetadata == null)
       throw _createSoapFault (FAULT_SERVER_ERROR, new IllegalStateException ());
 
-    return _createCreateResponse (sOurAPURL, aMetadata.getChannelID (), sMessageID);
+    // Create response
+    final CreateResponse ret = new CreateResponse ();
+    final ResourceCreated aResourceCreated = new ResourceCreated ();
+    final W3CEndpointReference w3CEndpointReference = _createW3CEndpointReference (sOurAPURL,
+                                                                                   aMetadata.getChannelID (),
+                                                                                   sMessageID);
+    aResourceCreated.getEndpointReference ().add (w3CEndpointReference);
+    ret.setResourceCreated (aResourceCreated);
+    return ret;
   }
 
   /**
