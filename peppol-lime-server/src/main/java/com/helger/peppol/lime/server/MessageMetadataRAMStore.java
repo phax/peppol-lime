@@ -71,33 +71,12 @@ final class MessageMetadataRAMStore
   private MessageMetadataRAMStore ()
   {}
 
-  /**
-   * Create the internal key for storage.
-   *
-   * @param sMessageID
-   *        The message ID. May neither be <code>null</code> nor empty.
-   * @param sThisServiceURL
-   *        The service URL to use. May neither be <code>null</code> nor empty.
-   * @return The key to use.
-   */
-  @Nonnull
-  @Nonempty
-  private static String _getKey (@Nonnull @Nonempty final String sMessageID,
-                                 @Nonnull @Nonempty final String sThisServiceURL)
+  public static boolean isStored (@Nonnull @Nonempty final String sMessageID)
   {
-    ValueEnforcer.notEmpty (sMessageID, "MessageID");
-    ValueEnforcer.notEmpty (sThisServiceURL, "ThisServiceURL");
-    return sMessageID + "::" + sThisServiceURL;
-  }
-
-  public static boolean isStored (@Nonnull @Nonempty final String sMessageID,
-                                  @Nonnull @Nonempty final String sThisServiceURL)
-  {
-    final String sKey = _getKey (sMessageID, sThisServiceURL);
     s_aRWLock.readLock ().lock ();
     try
     {
-      return s_aMap.containsKey (sKey);
+      return s_aMap.containsKey (sMessageID);
     }
     finally
     {
@@ -107,18 +86,16 @@ final class MessageMetadataRAMStore
 
   @Nonnull
   public static EChange createResource (@Nonnull @Nonempty final String sMessageID,
-                                        @Nonnull @Nonempty final String sThisServiceURL,
                                         @Nonnull final IMessageMetadata aMetadata)
   {
     ValueEnforcer.notNull (aMetadata, "Metadata");
 
-    final String sKey = _getKey (sMessageID, sThisServiceURL);
     s_aRWLock.writeLock ().lock ();
     try
     {
-      if (s_aMap.containsKey (sKey))
+      if (s_aMap.containsKey (sMessageID))
         return EChange.UNCHANGED;
-      s_aMap.put (sKey, aMetadata);
+      s_aMap.put (sMessageID, aMetadata);
       return EChange.CHANGED;
     }
     finally
@@ -128,14 +105,12 @@ final class MessageMetadataRAMStore
   }
 
   @Nullable
-  public static IMessageMetadata getMessage (@Nonnull @Nonempty final String sMessageID,
-                                             @Nonnull @Nonempty final String sThisServiceURL)
+  public static IMessageMetadata getMessage (@Nonnull @Nonempty final String sMessageID)
   {
-    final String sKey = _getKey (sMessageID, sThisServiceURL);
     s_aRWLock.readLock ().lock ();
     try
     {
-      return s_aMap.get (sKey);
+      return s_aMap.get (sMessageID);
     }
     finally
     {
@@ -143,14 +118,12 @@ final class MessageMetadataRAMStore
     }
   }
 
-  public static void removeMessage (@Nonnull @Nonempty final String sMessageID,
-                                    @Nonnull @Nonempty final String sThisServiceURL)
+  public static void removeMessage (@Nonnull @Nonempty final String sMessageID)
   {
-    final String sKey = _getKey (sMessageID, sThisServiceURL);
     s_aRWLock.readLock ().lock ();
     try
     {
-      s_aMap.remove (sKey);
+      s_aMap.remove (sMessageID);
     }
     finally
     {

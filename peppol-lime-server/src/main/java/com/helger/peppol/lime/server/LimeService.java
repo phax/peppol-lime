@@ -262,7 +262,7 @@ public class LimeService
       final HeaderList aHeaderList = _getInboundHeaderList ();
       aMetadata = MessageMetadataHelper.createMetadataFromHeadersWithCustomMessageID (aHeaderList, sMessageID);
 
-      if (MessageMetadataRAMStore.createResource (sMessageID, sThisServiceURL, aMetadata).isUnchanged ())
+      if (MessageMetadataRAMStore.createResource (sMessageID, aMetadata).isUnchanged ())
         throw new MessageIdReusedException ("Message id '" +
                                             sMessageID +
                                             "' is reused by this LIME service. Seems like we have a problem with the UUID generator");
@@ -482,8 +482,7 @@ public class LimeService
   {
     final HeaderList aHeaderList = _getInboundHeaderList ();
     final String sMessageID = MessageMetadataHelper.getMessageID (aHeaderList);
-    final String sThisServiceURL = _getThisServiceURL ();
-    final IMessageMetadata aMetadata = MessageMetadataRAMStore.getMessage (sMessageID, sThisServiceURL);
+    final IMessageMetadata aMetadata = MessageMetadataRAMStore.getMessage (sMessageID);
 
     if (aMetadata == null)
       throw _createSoapFault (FAULT_SERVER_ERROR,
@@ -527,7 +526,7 @@ public class LimeService
         _sendToAccessPointViaAS2 (aBody, aRecipientEndpoint, aMetadata);
       }
       // On success, remove the metadata
-      MessageMetadataRAMStore.removeMessage (sMessageID, sThisServiceURL);
+      MessageMetadataRAMStore.removeMessage (sMessageID);
     }
     catch (final RecipientUnreachableException ex)
     {
