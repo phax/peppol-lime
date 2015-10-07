@@ -50,7 +50,6 @@ import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
@@ -139,6 +138,7 @@ public class LimeService
 {
   private static final String FAULT_UNKNOWN_ENDPOINT = "The endpoint is not known";
   private static final String FAULT_SERVER_ERROR = "ServerError";
+  /** Safely determined value "limeService" */
   private static final String SERVICENAME = LimeService.class.getAnnotation (WebService.class).serviceName ();
   private static final QName QNAME_PAGEIDENTIFIER = new QName (CLimeIdentifiers.NAMESPACE_LIME,
                                                                CLimeIdentifiers.PAGEIDENTIFIER);
@@ -232,14 +232,13 @@ public class LimeService
     final String sOurAPURL = _getOurAPURL ();
 
     IMessageMetadata aMetadata = null;
-
     try
     {
       // Grabs the list of headers from the SOAP message
       final HeaderList aHeaderList = _getInboundHeaderList ();
       aMetadata = MessageMetadataHelper.createMetadataFromHeadersWithCustomMessageID (aHeaderList, sMessageID);
 
-      if (ResourceMemoryStore.getInstance ().createResource (sMessageID, sOurAPURL, aMetadata).isUnchanged ())
+      if (MessageMetadataRAMStore.createResource (sMessageID, sOurAPURL, aMetadata).isUnchanged ())
         throw new MessageIdReusedException ("Message id '" +
                                             sMessageID +
                                             "' is reused by this LIME service. Seems like we have a problem with the UUID generator");
@@ -271,7 +270,7 @@ public class LimeService
     final HeaderList aHeaderList = _getInboundHeaderList ();
     final String sMessageID = MessageMetadataHelper.getMessageID (aHeaderList);
     final String sOwnAPURL = _getOurAPURL ();
-    final IMessageMetadata aMetadata = ResourceMemoryStore.getInstance ().getMessage (sMessageID, sOwnAPURL);
+    final IMessageMetadata aMetadata = MessageMetadataRAMStore.getMessage (sMessageID, sOwnAPURL);
     final ISMLInfo aSML = LimeServerConfiguration.getSML ();
 
     try
@@ -308,6 +307,8 @@ public class LimeService
         _logRequest ("This is a request for a remote access point", sSenderURL, aMetadata, sRecipientURL);
         _sendToAccessPoint (aBody, aRecipientEndpoint, aMetadata);
       }
+      // On success, remove the metadata
+      MessageMetadataRAMStore.removeMessage (sMessageID, sOwnAPURL);
     }
     catch (final RecipientUnreachableException ex)
     {
@@ -364,12 +365,12 @@ public class LimeService
   public DeleteResponse delete (final Delete body)
   {
     final HeaderList aHeaderList = _getInboundHeaderList ();
-    final String channelID = MessageMetadataHelper.getChannelID (aHeaderList);
-    final String messageID = MessageMetadataHelper.getMessageID (aHeaderList);
+    final String sChannelID = MessageMetadataHelper.getChannelID (aHeaderList);
+    final String sMessageID = MessageMetadataHelper.getMessageID (aHeaderList);
     try
     {
       final String sStorageRoot = _getServletContext ().getRealPath ("/");
-      new LimeStorage (sStorageRoot).deleteDocument (channelID, messageID);
+      new LimeStorage (sStorageRoot).deleteDocument (sChannelID, sMessageID);
     }
     catch (final Exception ex)
     {
@@ -450,16 +451,16 @@ public class LimeService
     }
   }
 
-  private static void _addSingleMessageToResponse (final String sStorageRoot,
+  private static void _addSingleMessageToResponse (@Nonnull @Nonempty final String sStorageRoot,
                                                    final String sChannelID,
                                                    final String sMessageID,
                                                    final GetResponse getResponse) throws SAXException
   {
     final LimeStorage aStorage = new LimeStorage (sStorageRoot);
-    final Document documentMetadata = aStorage.getDocumentMetadata (sChannelID, sMessageID);
-    final Document document = aStorage.getDocument (sChannelID, sMessageID);
-    getResponse.getAny ().add (documentMetadata.getDocumentElement ());
-    getResponse.getAny ().add (document.getDocumentElement ());
+    final Document aDocumentMetadata = aStorage.getDocumentMetadata (sChannelID, sMessageID);
+    final Document aDocument = aStorage.getDocument (sChannelID, sMessageID);
+    getResponse.getAny ().add (aDocumentMetadata.getDocumentElement ());
+    getResponse.getAny ().add (aDocument.getDocumentElement ());
   }
 
   @Nonnull
@@ -467,16 +468,15 @@ public class LimeService
   {
     // FIXME read this from the configuration file for easily correct handling
     // of the endpoint URL
-    final ServletRequest servletRequest = _getServletRequest ();
-    final String sContextPath = _getServletContext ().getContextPath ();
-    final String thisAccessPointURLstr = servletRequest.getScheme () +
-                                         "://" +
-                                         servletRequest.getServerName () +
-                                         ":" +
-                                         servletRequest.getLocalPort () +
-                                         sContextPath +
-                                         '/';
-    return thisAccessPointURLstr + SERVICENAME;
+    final HttpServletRequest aServletRequest = _getServletRequest ();
+    return aServletRequest.getScheme () +
+           "://" +
+           aServletRequest.getServerName () +
+           ":" +
+           aServletRequest.getLocalPort () +
+           aServletRequest.getContextPath () +
+           '/' +
+           SERVICENAME;
   }
 
   private void _addPageListToResponse (@Nonnull @Nonempty final String sStorageRoot,

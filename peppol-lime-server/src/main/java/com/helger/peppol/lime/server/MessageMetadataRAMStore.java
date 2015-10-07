@@ -55,36 +55,21 @@ import com.helger.commons.state.EChange;
 import com.helger.peppol.lime.api.IMessageMetadata;
 
 /**
- * Memory backed storage of all known objects
+ * Memory backed storage of all known objects. It is filled on WS create and
+ * retrieved on WS put.
  *
  * @author Ravnholt
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @ThreadSafe
-public final class ResourceMemoryStore
+public final class MessageMetadataRAMStore
 {
-  /** Memory efficient singleton holder */
-  private static final class SingletonHolder
-  {
-    static final ResourceMemoryStore s_aInstance = new ResourceMemoryStore ();
-  }
-
-  private final ReadWriteLock m_aRWLock = new ReentrantReadWriteLock ();
-  private final Map <String, IMessageMetadata> m_aResourceMap = new HashMap <String, IMessageMetadata> ();
+  private static final ReadWriteLock s_aRWLock = new ReentrantReadWriteLock ();
+  private static final Map <String, IMessageMetadata> s_aMap = new HashMap <String, IMessageMetadata> ();
 
   /** Avoid instantiation */
-  private ResourceMemoryStore ()
+  private MessageMetadataRAMStore ()
   {}
-
-  /**
-   * @return Singleton {@link ResourceMemoryStore} instance. Never
-   *         <code>null</code>.
-   */
-  @Nonnull
-  public static ResourceMemoryStore getInstance ()
-  {
-    return SingletonHolder.s_aInstance;
-  }
 
   @Nonnull
   private static String _getKey (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr)
@@ -94,55 +79,69 @@ public final class ResourceMemoryStore
     return sMessageID + sURLStr;
   }
 
-  public boolean isStored (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr)
+  public static boolean isStored (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr)
   {
-    m_aRWLock.readLock ().lock ();
+    final String sKey = _getKey (sMessageID, sURLStr);
+    s_aRWLock.readLock ().lock ();
     try
     {
-      final String sKey = _getKey (sMessageID, sURLStr);
-      return m_aResourceMap.containsKey (sKey);
+      return s_aMap.containsKey (sKey);
     }
     finally
     {
-      m_aRWLock.readLock ().unlock ();
+      s_aRWLock.readLock ().unlock ();
     }
   }
 
   @Nonnull
-  public EChange createResource (@Nonnull @Nonempty final String sMessageID,
-                                 @Nonnull @Nonempty final String sURLStr,
-                                 @Nonnull final IMessageMetadata aMetadata)
+  public static EChange createResource (@Nonnull @Nonempty final String sMessageID,
+                                        @Nonnull @Nonempty final String sURLStr,
+                                        @Nonnull final IMessageMetadata aMetadata)
   {
     ValueEnforcer.notNull (aMetadata, "Metadata");
 
-    m_aRWLock.writeLock ().lock ();
+    final String sKey = _getKey (sMessageID, sURLStr);
+    s_aRWLock.writeLock ().lock ();
     try
     {
-      final String sKey = _getKey (sMessageID, sURLStr);
-      if (m_aResourceMap.containsKey (sKey))
+      if (s_aMap.containsKey (sKey))
         return EChange.UNCHANGED;
-      m_aResourceMap.put (sKey, aMetadata);
+      s_aMap.put (sKey, aMetadata);
       return EChange.CHANGED;
     }
     finally
     {
-      m_aRWLock.writeLock ().unlock ();
+      s_aRWLock.writeLock ().unlock ();
     }
   }
 
   @Nullable
-  public IMessageMetadata getMessage (@Nonnull @Nonempty final String sMessageID,
-                                      @Nonnull @Nonempty final String sURLStr)
+  public static IMessageMetadata getMessage (@Nonnull @Nonempty final String sMessageID,
+                                             @Nonnull @Nonempty final String sURLStr)
   {
-    m_aRWLock.readLock ().lock ();
+    final String sKey = _getKey (sMessageID, sURLStr);
+    s_aRWLock.readLock ().lock ();
     try
     {
-      final String sKey = _getKey (sMessageID, sURLStr);
-      return m_aResourceMap.get (sKey);
+      return s_aMap.get (sKey);
     }
     finally
     {
-      m_aRWLock.readLock ().unlock ();
+      s_aRWLock.readLock ().unlock ();
+    }
+  }
+
+  public static void removeMessage (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr)
+  {
+    final String sKey = _getKey (sMessageID, sURLStr);
+    s_aRWLock.readLock ().lock ();
+    try
+    {
+      s_aMap.remove (sKey);
+    }
+    finally
+    {
+      s_aRWLock.readLock ().unlock ();
     }
   }
 }
