@@ -76,7 +76,6 @@ import com.helger.as2lib.client.AS2Client;
 import com.helger.as2lib.client.AS2ClientRequest;
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.equals.EqualsHelper;
@@ -174,6 +173,13 @@ public class LimeService
   private HttpServletRequest _getServletRequest ()
   {
     return (HttpServletRequest) m_aWebServiceContext.getMessageContext ().get (MessageContext.SERVLET_REQUEST);
+  }
+
+  @Nonnull
+  private LimeStorage _createLimeStorage ()
+  {
+    final String sStorePath = _getServletContext ().getRealPath ("/");
+    return new LimeStorage (sStorePath);
   }
 
   @Nonnull
@@ -289,15 +295,15 @@ public class LimeService
       final String sRecipientURL = W3CEndpointReferenceHelper.getAddress (aRecipientEndpoint.getEndpointReference ());
       if (EqualsHelper.equalsIgnoreCase (sSenderURL, sRecipientURL))
       {
-        _logRequest ("This is a local request - sending directly to inbox",
-                     sSenderURL,
-                     aMetadata,
-                     "INBOX: " + aMetadata.getRecipientID ().getValue ());
+        _logPutRequest ("This is a local request - sending directly to inbox",
+                        sSenderURL,
+                        aMetadata,
+                        "INBOX: " + aMetadata.getRecipientID ().getValue ());
         _sendToInbox (aMetadata, aBody);
       }
       else
       {
-        _logRequest ("This is a request for a remote access point", sSenderURL, aMetadata, sRecipientURL);
+        _logPutRequest ("This is a request for a remote access point", sSenderURL, aMetadata, sRecipientURL);
         _sendToAccessPoint (aBody, aRecipientEndpoint, aMetadata);
       }
       // On success, remove the metadata
@@ -335,11 +341,10 @@ public class LimeService
     final GetResponse aGetResponse = new GetResponse ();
     try
     {
-      final String sStorageRoot = _getServletContext ().getRealPath ("/");
       if (StringHelper.hasNoText (sMessageID))
-        _addPageListToResponse (sStorageRoot, sPageIdentifier, sChannelID, aGetResponse);
+        _addPageListToResponse (sPageIdentifier, sChannelID, aGetResponse);
       else
-        _addSingleMessageToResponse (sStorageRoot, sChannelID, sMessageID, aGetResponse);
+        _addSingleMessageToResponse (sChannelID, sMessageID, aGetResponse);
     }
     catch (final Exception ex)
     {
@@ -362,8 +367,7 @@ public class LimeService
     final String sMessageID = MessageMetadataHelper.getMessageID (aHeaderList);
     try
     {
-      final String sStorageRoot = _getServletContext ().getRealPath ("/");
-      new LimeStorage (sStorageRoot).deleteDocument (sChannelID, sMessageID);
+      _createLimeStorage ().deleteDocument (sChannelID, sMessageID);
     }
     catch (final Exception ex)
     {
@@ -444,12 +448,11 @@ public class LimeService
     }
   }
 
-  private static void _addSingleMessageToResponse (@Nonnull @Nonempty final String sStorageRoot,
-                                                   final String sChannelID,
-                                                   final String sMessageID,
-                                                   final GetResponse getResponse) throws SAXException
+  private void _addSingleMessageToResponse (@Nonnull final String sChannelID,
+                                            @Nonnull final String sMessageID,
+                                            @Nonnull final GetResponse getResponse) throws SAXException
   {
-    final LimeStorage aStorage = new LimeStorage (sStorageRoot);
+    final LimeStorage aStorage = _createLimeStorage ();
     final Document aDocumentMetadata = aStorage.getDocumentMetadata (sChannelID, sMessageID);
     final Document aDocument = aStorage.getDocument (sChannelID, sMessageID);
     getResponse.getAny ().add (aDocumentMetadata.getDocumentElement ());
@@ -472,25 +475,21 @@ public class LimeService
            SERVICENAME;
   }
 
-  private void _addPageListToResponse (@Nonnull @Nonempty final String sStorageRoot,
-                                       @Nullable final String sPageNumber,
-                                       final String sChannelID,
-                                       final GetResponse aGetResponse) throws Exception
+  private void _addPageListToResponse (@Nullable final String sPageNumber,
+                                       @Nonnull final String sChannelID,
+                                       @Nonnull final GetResponse aGetResponse) throws Exception
   {
     final String sOwnAPURL = _getOurAPURL ();
     final int nPageNumber = StringParser.parseInt (StringHelper.trim (sPageNumber), 0);
-    final Document aDocument = MessagePage.getPageList (nPageNumber,
-                                                        sOwnAPURL,
-                                                        new LimeStorage (sStorageRoot),
-                                                        sChannelID);
+    final Document aDocument = MessagePage.getPageList (nPageNumber, sOwnAPURL, _createLimeStorage (), sChannelID);
     if (aDocument != null)
       aGetResponse.getAny ().add (aDocument.getDocumentElement ());
   }
 
-  private static void _logRequest (@Nullable final String sAction,
-                                   @Nullable final String sOwnUrl,
-                                   @Nonnull final IMessageMetadata aMetadata,
-                                   @Nullable final String sReceiverID)
+  private static void _logPutRequest (@Nullable final String sAction,
+                                      @Nullable final String sSenderUrl,
+                                      @Nonnull final IMessageMetadata aMetadata,
+                                      @Nullable final String sReceiverID)
   {
     final String sNewLine = ENewLineMode.DEFAULT.getText ();
     final String s = "REQUEST start--------------------------------------------------" +
@@ -498,8 +497,8 @@ public class LimeService
                      "Action: " +
                      sAction +
                      sNewLine +
-                     "Own URL: " +
-                     sOwnUrl +
+                     "Sender URL: " +
+                     sSenderUrl +
                      sNewLine +
                      "Sending to : " +
                      sReceiverID +
@@ -508,28 +507,16 @@ public class LimeService
                      aMetadata.getMessageID () +
                      sNewLine +
                      "Sender ID: " +
-                     aMetadata.getSenderID ().getValue () +
-                     sNewLine +
-                     "Sender type: " +
-                     aMetadata.getSenderID ().getScheme () +
+                     aMetadata.getSenderID ().getURIEncoded () +
                      sNewLine +
                      "Recipient ID: " +
-                     aMetadata.getRecipientID ().getValue () +
-                     sNewLine +
-                     "Recipient type: " +
-                     aMetadata.getRecipientID ().getScheme () +
+                     aMetadata.getRecipientID ().getURIEncoded () +
                      sNewLine +
                      "Document ID: " +
-                     aMetadata.getDocumentTypeID ().getValue () +
-                     sNewLine +
-                     "Document type: " +
-                     aMetadata.getDocumentTypeID ().getScheme () +
+                     aMetadata.getDocumentTypeID ().getURIEncoded () +
                      sNewLine +
                      "Process ID: " +
-                     aMetadata.getProcessID ().getValue () +
-                     sNewLine +
-                     "Process type: " +
-                     aMetadata.getProcessID ().getScheme () +
+                     aMetadata.getProcessID ().getURIEncoded () +
                      sNewLine +
                      "REQUEST end----------------------------------------------------" +
                      sNewLine;
@@ -589,8 +576,7 @@ public class LimeService
         final Document aDocument = aElement.getOwnerDocument ();
         final Document aMetadataDocument = MessageMetadataHelper.createHeadersDocument (aMetadata);
 
-        final String sStorageRoot = _getServletContext ().getRealPath ("/");
-        new LimeStorage (sStorageRoot).saveDocument (sStorageChannelID, sMessageID, aMetadataDocument, aDocument);
+        _createLimeStorage ().saveDocument (sStorageChannelID, sMessageID, aMetadataDocument, aDocument);
       }
     }
     catch (final Exception ex)

@@ -85,8 +85,8 @@ public final class MessagePage
 
   public static Document getPageList (final int nPageNum,
                                       final String sAPURL,
-                                      final LimeStorage aStorage,
-                                      final String sChannelID) throws JAXBException
+                                      @Nonnull final LimeStorage aStorage,
+                                      @Nonnull final String sChannelID) throws JAXBException
   {
     // Get all message IDs
     final String [] aMessageIDs = aStorage.getMessageIDs (sChannelID);
