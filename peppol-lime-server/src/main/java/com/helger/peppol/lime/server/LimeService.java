@@ -185,9 +185,14 @@ public class LimeService
   @Nonnull
   private LimeStorage _createLimeStorage ()
   {
-    final ServletContext aSC = (ServletContext) m_aWebServiceContext.getMessageContext ()
-                                                                    .get (MessageContext.SERVLET_CONTEXT);
-    final String sStorePath = aSC.getRealPath ("/");
+    String sStorePath = LimeServerConfiguration.getStoragePath ();
+    if (sStorePath == null)
+    {
+      // Default to servlet context
+      final ServletContext aSC = (ServletContext) m_aWebServiceContext.getMessageContext ()
+                                                                      .get (MessageContext.SERVLET_CONTEXT);
+      sStorePath = aSC.getRealPath ("/");
+    }
     return new LimeStorage (sStorePath);
   }
 
@@ -562,9 +567,9 @@ public class LimeService
         final String sThisServiceURL = _getThisServiceURL ();
         final int nPageNumber = StringParser.parseInt (StringHelper.trim (sPageIdentifier), 0);
         final Document aDocument = MessagePageListCreator.getPageList (nPageNumber,
-                                                            sThisServiceURL,
-                                                            _createLimeStorage (),
-                                                            sChannelID);
+                                                                       sThisServiceURL,
+                                                                       _createLimeStorage (),
+                                                                       sChannelID);
         if (aDocument != null)
           aGetResponse.getAny ().add (aDocument.getDocumentElement ());
       }

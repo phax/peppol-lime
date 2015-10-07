@@ -172,4 +172,13 @@ public final class LimeServerConfiguration
     final String sAlgo = s_aConfigFile.getString ("as2.sign.algorithm");
     return ECryptoAlgorithmSign.getFromIDOrDefault (sAlgo, ECryptoAlgorithmSign.DIGEST_SHA1);
   }
+
+  /**
+   * @return The storage path for the LIME messages.
+   */
+  @Nullable
+  public static String getStoragePath ()
+  {
+    return s_aConfigFile.getString ("storage.path");
+  }
 }
