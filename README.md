@@ -5,6 +5,8 @@ No new functionality is added, but the existing dependencies are kept up-to-date
 
 This version of the LIME server uses AS2 to forward messages to foreign APs. START is no longer supported!
 
+Latest version: **3.0.0** as of 2015-10-09
+
 # Project layout
 This project has the following sub-projects
   * `peppol-lime-api` with the most generic API and a lot of JAXB generated classes (JAR library)
