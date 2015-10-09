@@ -59,7 +59,6 @@ import javax.xml.ws.Action;
                com.helger.peppol.lime.api.wstransfer.ObjectFactory.class })
 public interface Resource
 {
-
   /**
    * @param body
    * @return returns org.w3._2009._02.ws_tra.GetResponse
@@ -67,9 +66,9 @@ public interface Resource
   @WebMethod (operationName = "Get")
   @WebResult (name = "GetResponse", targetNamespace = "http://www.w3.org/2009/02/ws-tra", partName = "Body")
   @Action (input = "http://www.w3.org/2009/02/ws-tra/Get", output = "http://www.w3.org/2009/02/ws-tra/GetResponse")
-  public GetResponse get (@WebParam (name = "Get",
-                                     targetNamespace = "http://www.w3.org/2009/02/ws-tra",
-                                     partName = "Body") Get body);
+  GetResponse get (@WebParam (name = "Get",
+                              targetNamespace = "http://www.w3.org/2009/02/ws-tra",
+                              partName = "Body") Get body);
 
   /**
    * @param body
@@ -78,9 +77,9 @@ public interface Resource
   @WebMethod (operationName = "Put")
   @WebResult (name = "PutResponse", targetNamespace = "http://www.w3.org/2009/02/ws-tra", partName = "Body")
   @Action (input = "http://www.w3.org/2009/02/ws-tra/Put", output = "http://www.w3.org/2009/02/ws-tra/PutResponse")
-  public PutResponse put (@WebParam (name = "Put",
-                                     targetNamespace = "http://www.w3.org/2009/02/ws-tra",
-                                     partName = "Body") Put body);
+  PutResponse put (@WebParam (name = "Put",
+                              targetNamespace = "http://www.w3.org/2009/02/ws-tra",
+                              partName = "Body") Put body);
 
   /**
    * @param body
@@ -90,21 +89,23 @@ public interface Resource
   @WebResult (name = "DeleteResponse", targetNamespace = "http://www.w3.org/2009/02/ws-tra", partName = "Body")
   @Action (input = "http://www.w3.org/2009/02/ws-tra/Delete",
            output = "http://www.w3.org/2009/02/ws-tra/DeleteResponse")
-  public DeleteResponse delete (@WebParam (name = "Delete",
-                                           targetNamespace = "http://www.w3.org/2009/02/ws-tra",
-                                           partName = "Body") Delete body);
+  DeleteResponse delete (@WebParam (name = "Delete",
+                                    targetNamespace = "http://www.w3.org/2009/02/ws-tra",
+                                    partName = "Body") Delete body);
 
   /**
+   * Throws FaultMessage in case of an error
+   * 
    * @param body
+   *        The create body
    * @return returns org.w3._2009._02.ws_tra.CreateResponse
-   * @throws FaultMessage
    */
   @WebMethod (operationName = "Create")
   @WebResult (name = "CreateResponse", targetNamespace = "http://www.w3.org/2009/02/ws-tra", partName = "Body")
   @Action (input = "http://www.w3.org/2009/02/ws-tra/Create",
            output = "http://www.w3.org/2009/02/ws-tra/CreateResponse")
-  public CreateResponse create (@WebParam (name = "Create",
-                                           targetNamespace = "http://www.w3.org/2009/02/ws-tra",
-                                           partName = "Body") Create body);
+  CreateResponse create (@WebParam (name = "Create",
+                                    targetNamespace = "http://www.w3.org/2009/02/ws-tra",
+                                    partName = "Body") Create body);
 
 }
