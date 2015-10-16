@@ -44,6 +44,7 @@ import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -100,7 +101,7 @@ public final class MainLimeClient
 
     final String sLimeUrl = "http://localhost:8091/limeService";
     // any xml will do
-    final IReadableResource xmlFile = new ClassPathResource ("xml/CENBII-Order-maximal.xml");
+    final IReadableResource xmlFile = new ClassPathResource ("xml/as2-test-at-gov.xml");
 
     _testSend (sLimeUrl, xmlFile, SENDER, RECEIVER);
     if (false)
@@ -158,6 +159,9 @@ public final class MainLimeClient
     endpointReference.setChannelID (channelID);
 
     final IMessage message = _createSampleMessage (xml, senderID, receiverID, DOCID, PROCESS);
+    if (message.getDocument () == null)
+      return null;
+
     final String messageID = _testSendMessage (message, endpointReference);
     return messageID;
   }
@@ -287,6 +291,7 @@ public final class MainLimeClient
     }
   }
 
+  @Nonnull
   private static IMessage _createSampleMessage (final IReadableResource xml,
                                                 final IParticipantIdentifier senderID,
                                                 final IParticipantIdentifier receiverID,
