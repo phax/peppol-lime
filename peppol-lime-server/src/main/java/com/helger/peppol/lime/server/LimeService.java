@@ -108,8 +108,8 @@ import com.helger.peppol.lime.server.exception.MessageIdReusedException;
 import com.helger.peppol.lime.server.exception.RecipientUnreachableException;
 import com.helger.peppol.lime.server.storage.LimeStorage;
 import com.helger.peppol.lime.server.storage.MessagePageListCreator;
-import com.helger.peppol.sbdh.DocumentData;
-import com.helger.peppol.sbdh.write.DocumentDataWriter;
+import com.helger.peppol.sbdh.PeppolSBDHDocument;
+import com.helger.peppol.sbdh.write.PeppolSBDHDocumentWriter;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.EndpointType;
@@ -417,13 +417,13 @@ public class LimeService
     final Element aSourceNode = (Element) aBody.getAnyAtIndex (0);
 
     // Build SBDH
-    final DocumentData aDD = DocumentData.create (aSourceNode);
+    final PeppolSBDHDocument aDD = PeppolSBDHDocument.create (aSourceNode);
     aDD.setSender (aMetadata.getSenderID ().getScheme (), aMetadata.getSenderID ().getValue ());
     aDD.setReceiver (aMetadata.getRecipientID ().getScheme (), aMetadata.getRecipientID ().getValue ());
     aDD.setDocumentType (aMetadata.getDocumentTypeID ().getScheme (), aMetadata.getDocumentTypeID ().getValue ());
     aDD.setProcess (aMetadata.getProcessID ().getScheme (), aMetadata.getProcessID ().getValue ());
 
-    final StandardBusinessDocument aSBD = new DocumentDataWriter ().createStandardBusinessDocument (aDD);
+    final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aDD);
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
       throw new IllegalStateException ("Failed to serialize SBD!");
