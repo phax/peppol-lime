@@ -40,6 +40,8 @@
  */
 package com.helger.peppol.lime.server;
 
+import java.io.File;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -58,7 +60,6 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -66,24 +67,20 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.unece.cefact.namespaces.sbdh.StandardBusinessDocument;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.helger.as2lib.client.AS2Client;
-import com.helger.as2lib.client.AS2ClientRequest;
 import com.helger.as2lib.client.AS2ClientResponse;
-import com.helger.as2lib.client.AS2ClientSettings;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.equals.EqualsHelper;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.system.ENewLineMode;
 import com.helger.commons.xml.XMLFactory;
 import com.helger.jaxb.JAXBContextCache;
+import com.helger.peppol.as2client.AS2ClientBuilder;
+import com.helger.peppol.as2client.AS2ClientHelper;
 import com.helger.peppol.identifier.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.IParticipantIdentifier;
 import com.helger.peppol.identifier.IProcessIdentifier;
@@ -108,8 +105,6 @@ import com.helger.peppol.lime.server.exception.MessageIdReusedException;
 import com.helger.peppol.lime.server.exception.RecipientUnreachableException;
 import com.helger.peppol.lime.server.storage.LimeStorage;
 import com.helger.peppol.lime.server.storage.MessagePageListCreator;
-import com.helger.peppol.sbdh.PeppolSBDHDocument;
-import com.helger.peppol.sbdh.write.PeppolSBDHDocumentWriter;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.EndpointType;
@@ -117,7 +112,6 @@ import com.helger.peppol.smp.ISMPTransportProfile;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.utils.W3CEndpointReferenceHelper;
-import com.helger.sbdh.SBDMarshaller;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
@@ -415,30 +409,29 @@ public class LimeService
                                                 @Nonnull final IMessageMetadata aMetadata) throws Exception
   {
     final Element aSourceNode = (Element) aBody.getAnyAtIndex (0);
+    final X509Certificate aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aRecipientEndpoint);
 
-    // Build SBDH
-    final PeppolSBDHDocument aDD = PeppolSBDHDocument.create (aSourceNode);
-    aDD.setSender (aMetadata.getSenderID ().getScheme (), aMetadata.getSenderID ().getValue ());
-    aDD.setReceiver (aMetadata.getRecipientID ().getScheme (), aMetadata.getRecipientID ().getValue ());
-    aDD.setDocumentType (aMetadata.getDocumentTypeID ().getScheme (), aMetadata.getDocumentTypeID ().getValue ());
-    aDD.setProcess (aMetadata.getProcessID ().getScheme (), aMetadata.getProcessID ().getValue ());
-
-    final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aDD);
-    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
-    if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
-      throw new IllegalStateException ("Failed to serialize SBD!");
-    aBAOS.close ();
-
-    // send message via AS2
-    final AS2ClientRequest aRequest = new AS2ClientRequest ("OpenPEPPOL AS2 message");
-    // Set as string - less problems than with byte[]
-    aRequest.setData (aBAOS.getAsString (CCharset.CHARSET_UTF_8_OBJ), CCharset.CHARSET_UTF_8_OBJ);
-    final AS2ClientSettings aSettings = AS2SettingsProvider.createAS2ClientSettings (aRecipientEndpoint, aMetadata);
-    final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aSettings, aRequest);
+    final String sReceiverURL = W3CEndpointReferenceHelper.getAddress (aRecipientEndpoint.getEndpointReference ());
+    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setPeppolSenderID (aMetadata.getSenderID ())
+                                                               .setPeppolReceiverID (aMetadata.getRecipientID ())
+                                                               .setPeppolDocumentTypeID (aMetadata.getDocumentTypeID ())
+                                                               .setPeppolProcessID (aMetadata.getProcessID ())
+                                                               .setBusinessDocument (aSourceNode)
+                                                               .setPKCS12KeyStore (new File (LimeServerConfiguration.getAS2KeystorePath ()),
+                                                                                   LimeServerConfiguration.getAS2KeystorePassword ())
+                                                               .setSenderAS2ID (LimeServerConfiguration.getAS2SenderID ())
+                                                               .setSenderAS2Email (LimeServerConfiguration.getAS2SenderEmail ())
+                                                               .setSenderAS2KeyAlias (LimeServerConfiguration.getAS2SenderKeyAlias ())
+                                                               .setReceiverAS2ID (AS2ClientHelper.getSubjectCommonName (aReceiverCertificate))
+                                                               .setReceiverAS2KeyAlias (AS2ClientHelper.getSubjectCommonName (aReceiverCertificate))
+                                                               .setReceiverAS2Url (sReceiverURL)
+                                                               .setReceiverCertificate (aReceiverCertificate)
+                                                               .setAS2SigningAlgorithm (LimeServerConfiguration.getAS2SignAlgorithm ())
+                                                               .sendSynchronous ();
     if (aResponse.hasException ())
-      s_aLogger.error ("Error sending to " + aSettings.getDestinationAS2URL () + ": " + aResponse.getAsString ());
+      s_aLogger.error ("Error sending to " + sReceiverURL + ": " + aResponse.getAsString ());
     else
-      s_aLogger.info ("Successfully forwarded message to " + aSettings.getDestinationAS2URL ());
+      s_aLogger.info ("Successfully forwarded message to " + sReceiverURL);
   }
 
   private void _sendToInbox (@Nonnull final IMessageMetadata aMetadata,
