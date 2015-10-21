@@ -398,6 +398,7 @@ public class LimeService
     final X509Certificate aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aRecipientEndpoint);
 
     final File aKeyStoreFile = new File (LimeServerConfiguration.getAS2KeystorePath ());
+    // TODO remove check when using as2-peppol-client > 1.0.2
     if (!aKeyStoreFile.canWrite ())
       s_aLogger.error ("The PKCS12 key store file '" +
                        aKeyStoreFile.getAbsolutePath () +
