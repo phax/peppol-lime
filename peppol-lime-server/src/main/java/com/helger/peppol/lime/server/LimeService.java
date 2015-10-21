@@ -133,8 +133,7 @@ public class LimeService
   private static final String FAULT_SERVER_ERROR = "ServerError";
   /** Safely determined value "limeService" */
   private static final String SERVICENAME = LimeService.class.getAnnotation (WebService.class).serviceName ();
-  private static final QName QNAME_PAGEIDENTIFIER = new QName (CLimeIdentifiers.NAMESPACE_LIME,
-                                                               CLimeIdentifiers.PAGEIDENTIFIER);
+  private static final QName QNAME_PAGEIDENTIFIER = new QName (CLimeIdentifiers.NAMESPACE_LIME, CLimeIdentifiers.PAGEIDENTIFIER);
   private static final Logger s_aLogger = LoggerFactory.getLogger (LimeService.class);
 
   private static final ObjectFactory s_aObjFactory = new ObjectFactory ();
@@ -188,16 +187,14 @@ public class LimeService
     if (sStorePath == null)
     {
       // Default to servlet context
-      final ServletContext aSC = (ServletContext) m_aWebServiceContext.getMessageContext ()
-                                                                      .get (MessageContext.SERVLET_CONTEXT);
+      final ServletContext aSC = (ServletContext) m_aWebServiceContext.getMessageContext ().get (MessageContext.SERVLET_CONTEXT);
       sStorePath = aSC.getRealPath ("/");
     }
     return new LimeStorage (sStorePath);
   }
 
   @Nonnull
-  private static SOAPFaultException _createSoapFault (final String sFaultMessage,
-                                                      final Exception e) throws RuntimeException
+  private static SOAPFaultException _createSoapFault (final String sFaultMessage, final Exception e) throws RuntimeException
   {
     try
     {
@@ -223,8 +220,7 @@ public class LimeService
 
     // Channel ID
     final Document aDummyDoc = XMLFactory.newDocument ();
-    Element aElement = aDummyDoc.createElementNS (CTransportIdentifiers.NAMESPACE_TRANSPORT_IDS,
-                                                  CLimeIdentifiers.CHANNELID);
+    Element aElement = aDummyDoc.createElementNS (CTransportIdentifiers.NAMESPACE_TRANSPORT_IDS, CLimeIdentifiers.CHANNELID);
     aElement.appendChild (aDummyDoc.createTextNode (sChannelID));
     aReferenceParameters.add (aElement);
 
@@ -278,9 +274,7 @@ public class LimeService
     // Create response
     final CreateResponse ret = new CreateResponse ();
     final ResourceCreated aResourceCreated = new ResourceCreated ();
-    final W3CEndpointReference w3CEndpointReference = createW3CEndpointReference (sThisServiceURL,
-                                                                                  aMetadata.getChannelID (),
-                                                                                  sMessageID);
+    final W3CEndpointReference w3CEndpointReference = createW3CEndpointReference (sThisServiceURL, aMetadata.getChannelID (), sMessageID);
     aResourceCreated.getEndpointReference ().add (w3CEndpointReference);
     ret.setResourceCreated (aResourceCreated);
     return ret;
@@ -296,10 +290,7 @@ public class LimeService
     EndpointType ret = null;
     try
     {
-      ret = new SMPClientReadOnly (aRecipientId, aSMLInfo).getEndpoint (aRecipientId,
-                                                                        aDocumentID,
-                                                                        aProcessID,
-                                                                        aTransportProfile);
+      ret = new SMPClientReadOnly (aRecipientId, aSMLInfo).getEndpoint (aRecipientId, aDocumentID, aProcessID, aTransportProfile);
       if (ret == null)
         s_aLogger.error ("Failed to resolve AP endpoint url for recipient " +
                          aRecipientId +
@@ -365,10 +356,7 @@ public class LimeService
   {
     try
     {
-      s_aLogger.warn ("Unable to send MessageUndeliverable for Message ID: " +
-                      sMessageID +
-                      " Reason: " +
-                      ex.getMessage ());
+      s_aLogger.warn ("Unable to send MessageUndeliverable for Message ID: " + sMessageID + " Reason: " + ex.getMessage ());
 
       final MessageUndeliverableType aMsgUndeliverable = s_aObjFactory.createMessageUndeliverableType ();
       aMsgUndeliverable.setMessageIdentifier (sMessageID);
@@ -388,9 +376,7 @@ public class LimeService
                                                                   CLimeIdentifiers.MESSAGEUNDELIVERABLE_PROCESS);
 
       final Document aDocument = XMLFactory.newDocument ();
-      final Marshaller aMarshaller = JAXBContextCache.getInstance ()
-                                                     .getFromCache (MessageUndeliverableType.class)
-                                                     .createMarshaller ();
+      final Marshaller aMarshaller = JAXBContextCache.getInstance ().getFromCache (MessageUndeliverableType.class).createMarshaller ();
       aMarshaller.marshal (s_aObjFactory.createMessageUndeliverable (aMsgUndeliverable), new DOMResult (aDocument));
 
       // Create a dummy "put" and send it to the inbox of the sender
@@ -411,14 +397,19 @@ public class LimeService
     final Element aSourceNode = (Element) aBody.getAnyAtIndex (0);
     final X509Certificate aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aRecipientEndpoint);
 
+    final File aKeyStoreFile = new File (LimeServerConfiguration.getAS2KeystorePath ());
+    if (!aKeyStoreFile.canWrite ())
+      s_aLogger.error ("The PKCS12 key store file '" +
+                       aKeyStoreFile.getAbsolutePath () +
+                       "' is not writable. This will result in a weird behaviour!");
+
     final String sReceiverURL = W3CEndpointReferenceHelper.getAddress (aRecipientEndpoint.getEndpointReference ());
     final AS2ClientResponse aResponse = new AS2ClientBuilder ().setPeppolSenderID (aMetadata.getSenderID ())
                                                                .setPeppolReceiverID (aMetadata.getRecipientID ())
                                                                .setPeppolDocumentTypeID (aMetadata.getDocumentTypeID ())
                                                                .setPeppolProcessID (aMetadata.getProcessID ())
                                                                .setBusinessDocument (aSourceNode)
-                                                               .setPKCS12KeyStore (new File (LimeServerConfiguration.getAS2KeystorePath ()),
-                                                                                   LimeServerConfiguration.getAS2KeystorePassword ())
+                                                               .setPKCS12KeyStore (aKeyStoreFile, LimeServerConfiguration.getAS2KeystorePassword ())
                                                                .setSenderAS2ID (LimeServerConfiguration.getAS2SenderID ())
                                                                .setSenderAS2Email (LimeServerConfiguration.getAS2SenderEmail ())
                                                                .setSenderAS2KeyAlias (LimeServerConfiguration.getAS2SenderKeyAlias ())
@@ -434,8 +425,7 @@ public class LimeService
       s_aLogger.info ("Successfully forwarded message to " + sReceiverURL);
   }
 
-  private void _sendToInbox (@Nonnull final IMessageMetadata aMetadata,
-                             @Nonnull final Put aBody) throws RecipientUnreachableException
+  private void _sendToInbox (@Nonnull final IMessageMetadata aMetadata, @Nonnull final Put aBody) throws RecipientUnreachableException
   {
     final String sStorageChannelID = aMetadata.getRecipientID ().getValue ();
     if (sStorageChannelID == null)
@@ -483,8 +473,7 @@ public class LimeService
     final IMessageMetadata aMetadata = MessageMetadataRAMStore.getMessage (sMessageID);
 
     if (aMetadata == null)
-      throw _createSoapFault (FAULT_SERVER_ERROR,
-                              new IllegalStateException ("No such message ID found: " + sMessageID));
+      throw _createSoapFault (FAULT_SERVER_ERROR, new IllegalStateException ("No such message ID found: " + sMessageID));
 
     try
     {
@@ -552,8 +541,7 @@ public class LimeService
     final HeaderList aHeaderList = _getInboundHeaderList ();
     final String sChannelID = MessageMetadataHelper.getChannelID (aHeaderList);
     final String sMessageID = MessageMetadataHelper.getMessageID (aHeaderList);
-    final String sPageIdentifier = MessageMetadataHelper.getStringContent (aHeaderList.get (QNAME_PAGEIDENTIFIER,
-                                                                                            false));
+    final String sPageIdentifier = MessageMetadataHelper.getStringContent (aHeaderList.get (QNAME_PAGEIDENTIFIER, false));
 
     final GetResponse aGetResponse = new GetResponse ();
     try
@@ -563,10 +551,7 @@ public class LimeService
         // Add page list to response
         final String sThisServiceURL = _getThisServiceURL ();
         final int nPageNumber = StringParser.parseInt (StringHelper.trim (sPageIdentifier), 0);
-        final Document aDocument = MessagePageListCreator.getPageList (nPageNumber,
-                                                                       sThisServiceURL,
-                                                                       _createLimeStorage (),
-                                                                       sChannelID);
+        final Document aDocument = MessagePageListCreator.getPageList (nPageNumber, sThisServiceURL, _createLimeStorage (), sChannelID);
         if (aDocument != null)
           aGetResponse.getAny ().add (aDocument.getDocumentElement ());
       }
