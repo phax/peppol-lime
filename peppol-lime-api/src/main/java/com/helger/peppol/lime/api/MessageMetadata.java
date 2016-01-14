@@ -61,7 +61,7 @@ import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class MessageMetadata implements IMessageMetadata
+public class MessageMetadata implements IMessageMetadata
 {
   /** The message identifier. */
   private final String m_sMessageID;
@@ -119,7 +119,7 @@ public final class MessageMetadata implements IMessageMetadata
    * @return the messageId the value of the message identifier.
    */
   @Nullable
-  public final String getMessageID ()
+  public String getMessageID ()
   {
     return m_sMessageID;
   }
@@ -128,7 +128,7 @@ public final class MessageMetadata implements IMessageMetadata
    * @return the channelId
    */
   @Nullable
-  public final String getChannelID ()
+  public String getChannelID ()
   {
     return m_sChannelID;
   }
@@ -137,7 +137,7 @@ public final class MessageMetadata implements IMessageMetadata
    * @return the senderValue
    */
   @Nonnull
-  public final SimpleParticipantIdentifier getSenderID ()
+  public SimpleParticipantIdentifier getSenderID ()
   {
     return m_aSenderID;
   }
@@ -146,7 +146,7 @@ public final class MessageMetadata implements IMessageMetadata
    * @return the recipientValue
    */
   @Nonnull
-  public final SimpleParticipantIdentifier getRecipientID ()
+  public SimpleParticipantIdentifier getRecipientID ()
   {
     return m_aRecipientID;
   }
@@ -155,7 +155,7 @@ public final class MessageMetadata implements IMessageMetadata
    * @return the documentIdValue
    */
   @Nonnull
-  public final SimpleDocumentTypeIdentifier getDocumentTypeID ()
+  public SimpleDocumentTypeIdentifier getDocumentTypeID ()
   {
     return m_aDocumentTypeID;
   }
@@ -164,7 +164,7 @@ public final class MessageMetadata implements IMessageMetadata
    * @return the processIdValue
    */
   @Nonnull
-  public final SimpleProcessIdentifier getProcessID ()
+  public SimpleProcessIdentifier getProcessID ()
   {
     return m_aProcessID;
   }

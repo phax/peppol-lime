@@ -103,9 +103,8 @@ public final class AccessPointX509TrustManager implements X509TrustManager
    * @throws CertificateException
    *         Throws a CertificateException.
    */
-  @Override
-  public final void checkClientTrusted (@Nonnull @Nonempty final X509Certificate [] aChain,
-                                        final String sAuthType) throws CertificateException
+  public void checkClientTrusted (@Nonnull @Nonempty final X509Certificate [] aChain,
+                                  final String sAuthType) throws CertificateException
   {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Checking client certificates.");
@@ -122,9 +121,8 @@ public final class AccessPointX509TrustManager implements X509TrustManager
    * @throws CertificateException
    *         Error with certificates.
    */
-  @Override
-  public final void checkServerTrusted (@Nonnull @Nonempty final X509Certificate [] aChain,
-                                        final String sAuthType) throws CertificateException
+  public void checkServerTrusted (@Nonnull @Nonempty final X509Certificate [] aChain,
+                                  final String sAuthType) throws CertificateException
   {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Checking server certificates.");
@@ -137,10 +135,9 @@ public final class AccessPointX509TrustManager implements X509TrustManager
    *
    * @return X509Certificate array containing the accepted root certificates.
    */
-  @Override
   @Nonnull
   @ReturnsMutableCopy
-  public final X509Certificate [] getAcceptedIssuers ()
+  public X509Certificate [] getAcceptedIssuers ()
   {
     return ArrayHelper.newArray (m_aRootCertificate);
   }

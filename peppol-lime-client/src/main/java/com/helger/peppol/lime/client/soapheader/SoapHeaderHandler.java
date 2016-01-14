@@ -94,7 +94,7 @@ final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext>
       try
       {
         final SOAPEnvelope aEnvelope = smc.getMessage ().getSOAPPart ().getEnvelope ();
-        createSOAPHeader (aEnvelope);
+        _createSOAPHeader (aEnvelope);
       }
       catch (final Exception ex)
       {
@@ -117,7 +117,7 @@ final class SoapHeaderHandler implements SOAPHandler <SOAPMessageContext>
   public void close (final MessageContext context)
   {}
 
-  private void createSOAPHeader (@Nonnull final SOAPEnvelope aEnvelope) throws Exception
+  private void _createSOAPHeader (@Nonnull final SOAPEnvelope aEnvelope) throws Exception
   {
     SOAPHeader aSoapHeader = aEnvelope.getHeader ();
     if (aSoapHeader == null)

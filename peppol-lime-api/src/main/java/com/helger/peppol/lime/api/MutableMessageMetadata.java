@@ -61,7 +61,7 @@ import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
-public final class MutableMessageMetadata implements IMessageMetadata
+public class MutableMessageMetadata implements IMessageMetadata
 {
   /** The message identifier. */
   private String m_sMessageID;
@@ -127,7 +127,7 @@ public final class MutableMessageMetadata implements IMessageMetadata
    * @return the messageId the value of the message identifier.
    */
   @Nullable
-  public final String getMessageID ()
+  public String getMessageID ()
   {
     return m_sMessageID;
   }
@@ -141,7 +141,7 @@ public final class MutableMessageMetadata implements IMessageMetadata
    * @return the channelId
    */
   @Nullable
-  public final String getChannelID ()
+  public String getChannelID ()
   {
     return m_sChannelID;
   }
@@ -155,7 +155,7 @@ public final class MutableMessageMetadata implements IMessageMetadata
    * @return the senderValue
    */
   @Nullable
-  public final SimpleParticipantIdentifier getSenderID ()
+  public SimpleParticipantIdentifier getSenderID ()
   {
     return m_aSenderID;
   }
@@ -169,7 +169,7 @@ public final class MutableMessageMetadata implements IMessageMetadata
    * @return the recipientValue
    */
   @Nullable
-  public final SimpleParticipantIdentifier getRecipientID ()
+  public SimpleParticipantIdentifier getRecipientID ()
   {
     return m_aRecipientID;
   }
@@ -183,7 +183,7 @@ public final class MutableMessageMetadata implements IMessageMetadata
    * @return the documentIdValue
    */
   @Nullable
-  public final SimpleDocumentTypeIdentifier getDocumentTypeID ()
+  public SimpleDocumentTypeIdentifier getDocumentTypeID ()
   {
     return m_aDocumentTypeID;
   }
@@ -197,7 +197,7 @@ public final class MutableMessageMetadata implements IMessageMetadata
    * @return the processIdValue
    */
   @Nullable
-  public final SimpleProcessIdentifier getProcessID ()
+  public SimpleProcessIdentifier getProcessID ()
   {
     return m_aProcessID;
   }
