@@ -7,6 +7,8 @@ This version of the LIME server uses AS2 to forward messages to foreign APs. STA
 
 Latest version: **3.0.1** as of 2016-01-21
 
+**Note**: 3.0.1 will be the last release except some issues or pull requests are opened. This means this project is now in "low effort maintenance" mode :) 
+
 # Project layout
 This project has the following sub-projects
   * `peppol-lime-api` with the most generic API and a lot of JAXB generated classes (JAR library)
