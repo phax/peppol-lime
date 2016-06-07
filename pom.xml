@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>1.4.2</version>
+    <version>1.8.4</version>
   </parent>
   <artifactId>peppol-lime-parent-pom</artifactId>
   <version>3.0.2-SNAPSHOT</version>
@@ -70,7 +70,7 @@
     <jaxws-plugin.version>2.3.1-b20150201.1248</jaxws-plugin.version>
     <!-- Must correspond to jaxws-tools.version in jaxws-maven-plugin POM -->
     <jaxws.version>2.2.9-b14002</jaxws.version>
-    <log4j.version>2.5</log4j.version>
+    <log4j.version>2.6</log4j.version>
   </properties>
   
   <dependencyManagement>
@@ -154,4 +154,17 @@
     <module>peppol-lime-client</module>
     <module>peppol-lime-server</module>
   </modules>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
