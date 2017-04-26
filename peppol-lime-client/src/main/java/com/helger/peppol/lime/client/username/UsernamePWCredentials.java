@@ -109,6 +109,6 @@ public final class UsernamePWCredentials implements IUsernamePWCredentials
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("username", m_sUsername).appendPassword ("password").toString ();
+    return new ToStringGenerator (this).append ("username", m_sUsername).appendPassword ("password").getToString ();
   }
 }

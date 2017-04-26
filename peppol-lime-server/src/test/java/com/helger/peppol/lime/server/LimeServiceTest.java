@@ -42,15 +42,14 @@ package com.helger.peppol.lime.server;
 
 import org.junit.Test;
 
-import com.helger.peppol.lime.server.LimeService;
-
 /**
  * Test class for class {@link LimeService}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class LimeServiceTest
 {
+  @SuppressWarnings ("unused")
   @Test
   public void testCtor ()
   {

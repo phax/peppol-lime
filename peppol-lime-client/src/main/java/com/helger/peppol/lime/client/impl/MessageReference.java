@@ -82,6 +82,6 @@ public class MessageReference implements IMessageReference
   {
     return new ToStringGenerator (this).append ("EndpointReference", m_aEndpointReference)
                                        .append ("MessageID", m_sMessageID)
-                                       .toString ();
+                                       .getToString ();
   }
 }

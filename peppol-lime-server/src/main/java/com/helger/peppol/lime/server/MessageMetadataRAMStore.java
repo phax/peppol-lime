@@ -40,8 +40,6 @@
  */
 package com.helger.peppol.lime.server;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -51,6 +49,8 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.state.EChange;
 import com.helger.peppol.lime.api.IMessageMetadata;
 
@@ -65,7 +65,7 @@ import com.helger.peppol.lime.api.IMessageMetadata;
 final class MessageMetadataRAMStore
 {
   private static final ReadWriteLock s_aRWLock = new ReentrantReadWriteLock ();
-  private static final Map <String, IMessageMetadata> s_aMap = new HashMap <String, IMessageMetadata> ();
+  private static final ICommonsMap <String, IMessageMetadata> s_aMap = new CommonsHashMap <> ();
 
   /** Avoid instantiation */
   private MessageMetadataRAMStore ()

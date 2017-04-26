@@ -42,9 +42,9 @@ package com.helger.peppol.lime.client.impl;
 
 import javax.annotation.Nullable;
 
-import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
-import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
+import com.helger.peppol.identifier.generic.doctype.SimpleDocumentTypeIdentifier;
+import com.helger.peppol.identifier.generic.participant.SimpleParticipantIdentifier;
+import com.helger.peppol.identifier.generic.process.SimpleProcessIdentifier;
 import com.helger.peppol.lime.api.IMessageMetadata;
 
 /**

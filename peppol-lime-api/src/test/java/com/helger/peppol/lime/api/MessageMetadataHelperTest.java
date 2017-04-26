@@ -47,9 +47,6 @@ import javax.xml.bind.JAXBException;
 import org.junit.Test;
 
 import com.helger.commons.mock.CommonsTestHelper;
-import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
-import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
@@ -76,15 +73,15 @@ public final class MessageMetadataHelperTest
   {
     _testMarshal (new MessageMetadata ("msgid",
                                        "chid",
-                                       SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                       SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                       SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                       SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+                                       CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender"),
+                                       CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver"),
+                                       CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc"),
+                                       CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc")));
     _testMarshal (new MessageMetadata (null,
                                        null,
-                                       SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                       SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                       SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                       SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+                                       CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender"),
+                                       CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver"),
+                                       CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc"),
+                                       CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc")));
   }
 }

@@ -57,16 +57,17 @@ import org.xml.sax.SAXException;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.xml.serialize.read.DOMReader;
-import com.helger.peppol.identifier.IDocumentTypeIdentifier;
+import com.helger.commons.ws.WSHelper;
 import com.helger.peppol.identifier.IIdentifier;
-import com.helger.peppol.identifier.IParticipantIdentifier;
-import com.helger.peppol.identifier.IProcessIdentifier;
-import com.helger.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
-import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
-import com.helger.peppol.identifier.process.EPredefinedProcessIdentifier;
-import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
+import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
+import com.helger.peppol.identifier.generic.doctype.SimpleDocumentTypeIdentifier;
+import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
+import com.helger.peppol.identifier.generic.participant.SimpleParticipantIdentifier;
+import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
+import com.helger.peppol.identifier.generic.process.SimpleProcessIdentifier;
+import com.helger.peppol.identifier.peppol.doctype.EPredefinedDocumentTypeIdentifier;
+import com.helger.peppol.identifier.peppol.process.EPredefinedProcessIdentifier;
+import com.helger.peppol.lime.api.CLIME;
 import com.helger.peppol.lime.client.IEndpointReference;
 import com.helger.peppol.lime.client.IInbox;
 import com.helger.peppol.lime.client.IMessage;
@@ -79,7 +80,7 @@ import com.helger.peppol.lime.client.impl.MessageReference;
 import com.helger.peppol.lime.client.impl.Outbox;
 import com.helger.peppol.lime.client.username.IUsernamePWCredentials;
 import com.helger.peppol.lime.client.username.UsernamePWCredentials;
-import com.helger.peppol.utils.PeppolTechnicalSetup;
+import com.helger.xml.serialize.read.DOMReader;
 
 /**
  * @author Ravnholt<br>
@@ -89,15 +90,15 @@ public final class MainLimeClient
 {
   public static final int POLL_SLEEP_MS = 3000;
   private static boolean s_bLeaveMessages = false;
-  private static final IParticipantIdentifier SENDER = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:b");
-  private static final IParticipantIdentifier RECEIVER = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
+  private static final IParticipantIdentifier SENDER = CLIME.IF.createParticipantIdentifierWithDefaultScheme ("9915:b");
+  private static final IParticipantIdentifier RECEIVER = CLIME.IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
   private static final IDocumentTypeIdentifier DOCID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20;
   private static final IProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS4A_V20;
 
   public static void main (final String [] args) throws Exception
   {
     if (false)
-      PeppolTechnicalSetup.setMetroDebugSystemProperties (true);
+      WSHelper.setMetroDebugSystemProperties (true);
 
     final String sLimeUrl = "http://localhost:8091/limeService";
     // any xml will do

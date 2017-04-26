@@ -44,12 +44,10 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlSchema;
 
 import com.helger.peppol.identifier.CIdentifier;
-import com.helger.peppol.identifier.IDocumentTypeIdentifier;
-import com.helger.peppol.identifier.IParticipantIdentifier;
-import com.helger.peppol.identifier.IProcessIdentifier;
-import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
-import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
+import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
+import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
+import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
+import com.helger.peppol.lime.api.CLIME;
 import com.helger.peppol.lime.api.ObjectFactory;
 
 /**
@@ -71,11 +69,11 @@ public final class CLimeIdentifiers
   public static final String PROCESSID = "ProcessIdentifier";
   public static final String BUSDOX_PROCID_TRANSPORT = "busdox-procid-transport";
 
-  public static final IParticipantIdentifier MESSAGEUNDELIVERABLE_SENDER = new SimpleParticipantIdentifier ("busdox-actorid-transport",
-                                                                                                            "busdox:sender");
-  public static final IDocumentTypeIdentifier MESSAGEUNDELIVERABLE_DOCUMENT = SimpleDocumentTypeIdentifier.createWithDefaultScheme ("http://busdox.org/transport/lime/1.0/::MessageUndeliverable");
-  public static final IProcessIdentifier MESSAGEUNDELIVERABLE_PROCESS = new SimpleProcessIdentifier (BUSDOX_PROCID_TRANSPORT,
-                                                                                                     CIdentifier.DEFAULT_PROCESS_IDENTIFIER_NOPROCESS);
+  public static final IParticipantIdentifier MESSAGEUNDELIVERABLE_SENDER = CLIME.IF.createParticipantIdentifier ("busdox-actorid-transport",
+                                                                                                                 "busdox:sender");
+  public static final IDocumentTypeIdentifier MESSAGEUNDELIVERABLE_DOCUMENT = CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("http://busdox.org/transport/lime/1.0/::MessageUndeliverable");
+  public static final IProcessIdentifier MESSAGEUNDELIVERABLE_PROCESS = CLIME.IF.createProcessIdentifier (BUSDOX_PROCID_TRANSPORT,
+                                                                                                          CIdentifier.DEFAULT_PROCESS_IDENTIFIER_NOPROCESS);
 
   private CLimeIdentifiers ()
   {}

@@ -63,7 +63,6 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.string.StringHelper;
-import com.helger.commons.xml.XMLFactory;
 import com.helger.jaxb.JAXBContextCache;
 import com.helger.peppol.lime.api.CTransportIdentifiers;
 import com.helger.peppol.lime.api.Entry;
@@ -81,6 +80,7 @@ import com.helger.peppol.lime.client.MessageException;
 import com.helger.peppol.lime.client.soapheader.SoapHeaderMapper;
 import com.helger.peppol.lime.client.username.IUsernamePWCredentials;
 import com.helger.peppol.utils.W3CEndpointReferenceHelper;
+import com.helger.xml.XMLFactory;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
@@ -124,7 +124,7 @@ public class Inbox implements IInbox
     try
     {
       final List <Element> aReferenceParameters = _createChannelReferenceParameter (aEndpointReference);
-      final List <IMessageReference> aMessages = new ArrayList <IMessageReference> ();
+      final List <IMessageReference> aMessages = new ArrayList <> ();
       boolean bMorePages;
       do
       {
@@ -146,7 +146,7 @@ public class Inbox implements IInbox
     _validateCredentialsObj (aCredentials);
     try
     {
-      final List <IMessageReference> aMessages = new ArrayList <IMessageReference> ();
+      final List <IMessageReference> aMessages = new ArrayList <> ();
       _getSinglePage (aEndpointReference, null, aCredentials, aMessages);
       return aMessages;
     }

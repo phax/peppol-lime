@@ -42,13 +42,13 @@ package com.helger.peppol.lime.server.storage;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -57,12 +57,12 @@ import org.xml.sax.SAXException;
 import com.helger.commons.CGlobal;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.io.file.iterate.FileSystemIterator;
-import com.helger.commons.xml.serialize.read.DOMReader;
-import com.helger.commons.xml.serialize.write.XMLWriter;
-import com.helger.datetime.PDTFactory;
+import com.helger.xml.serialize.read.DOMReader;
+import com.helger.xml.serialize.write.XMLWriter;
 
 /**
  * @author Ravnholt
@@ -261,6 +261,6 @@ public final class LimeStorage
   {
     final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
     final File aPayloadFile = _getPayloadFile (aChannelInboxDir, sMessageID);
-    return PDTFactory.createLocalDateTimeFromMillis (aPayloadFile.lastModified ());
+    return PDTFactory.createLocalDateTime (aPayloadFile.lastModified ());
   }
 }

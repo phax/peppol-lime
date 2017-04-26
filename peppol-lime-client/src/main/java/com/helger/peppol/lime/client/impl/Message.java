@@ -51,9 +51,9 @@ import org.w3c.dom.Document;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.peppol.identifier.IDocumentTypeIdentifier;
-import com.helger.peppol.identifier.IParticipantIdentifier;
-import com.helger.peppol.identifier.IProcessIdentifier;
+import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
+import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
+import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
 import com.helger.peppol.lime.client.IMessage;
 
 /**
@@ -158,7 +158,7 @@ public class Message implements IMessage
                                        .append ("ReceiverID", m_aReceiverID)
                                        .append ("DocumentTypeID", m_aDocumentTypeID)
                                        .append ("ProcessID", m_aProcessID)
-                                       .toString ();
+                                       .getToString ();
   }
 
 }

@@ -55,8 +55,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.helger.commons.xml.XMLFactory;
-import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.jaxb.JAXBContextCache;
 import com.helger.jaxb.JAXBMarshallerHelper;
 import com.helger.peppol.lime.api.CTransportIdentifiers;
@@ -67,6 +65,8 @@ import com.helger.peppol.lime.api.PageListType;
 import com.helger.peppol.lime.client.CLimeIdentifiers;
 import com.helger.peppol.lime.server.LimeService;
 import com.helger.peppol.utils.W3CEndpointReferenceHelper;
+import com.helger.xml.XMLFactory;
+import com.helger.xml.serialize.write.XMLWriter;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 /**
@@ -111,7 +111,7 @@ public final class MessagePageListCreator
                                               final PageListType aPageList)
   {
     final Document aDummyDoc = XMLFactory.newDocument ();
-    final List <Element> aReferenceParameters = new ArrayList <Element> ();
+    final List <Element> aReferenceParameters = new ArrayList <> ();
 
     // Page identifier
     Element aElement = aDummyDoc.createElementNS (CLimeIdentifiers.NAMESPACE_LIME, CLimeIdentifiers.PAGEIDENTIFIER);
@@ -148,7 +148,7 @@ public final class MessagePageListCreator
 
     final Document ret = XMLFactory.newDocument ();
     aMarshaller.marshal (s_aObjFactory.createPageList (aPageList), new DOMResult (ret));
-    s_aLogger.info (XMLWriter.getXMLString (ret));
+    s_aLogger.info (XMLWriter.getNodeAsString (ret));
     return ret;
   }
 

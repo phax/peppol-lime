@@ -45,9 +45,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.helger.commons.mock.CommonsTestHelper;
-import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
-import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
 
 /**
  * Test class for class {@link MessageMetadata}.
@@ -61,10 +58,10 @@ public final class MessageMetadataTest
   {
     final MessageMetadata m = new MessageMetadata ("msgid",
                                                    "chid",
-                                                   SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                   SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                   SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                   SimpleProcessIdentifier.createWithDefaultScheme ("proc"));
+                                                   CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender"),
+                                                   CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver"),
+                                                   CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc"),
+                                                   CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc"));
     assertEquals ("msgid", m.getMessageID ());
     assertEquals ("chid", m.getChannelID ());
     assertEquals ("sender", m.getSenderID ().getValue ());
@@ -75,51 +72,51 @@ public final class MessageMetadataTest
     CommonsTestHelper.testDefaultImplementationWithEqualContentObject (m,
                                                                        new MessageMetadata ("msgid",
                                                                                             "chid",
-                                                                                            SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                            SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                            SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                            SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+                                                                                            CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender"),
+                                                                                            CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver"),
+                                                                                            CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc"),
+                                                                                            CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc")));
     CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (m,
                                                                            new MessageMetadata ("msgid2",
                                                                                                 "chid",
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                                SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                                SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender"),
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver"),
+                                                                                                CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc"),
+                                                                                                CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc")));
     CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (m,
                                                                            new MessageMetadata ("msgid",
                                                                                                 "chid2",
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                                SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                                SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender"),
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver"),
+                                                                                                CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc"),
+                                                                                                CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc")));
     CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (m,
                                                                            new MessageMetadata ("msgid",
                                                                                                 "chid",
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("sender2"),
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                                SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                                SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender2"),
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver"),
+                                                                                                CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc"),
+                                                                                                CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc")));
     CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (m,
                                                                            new MessageMetadata ("msgid",
                                                                                                 "chid",
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("receiver2"),
-                                                                                                SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                                SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender"),
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver2"),
+                                                                                                CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc"),
+                                                                                                CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc")));
     CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (m,
                                                                            new MessageMetadata ("msgid",
                                                                                                 "chid",
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                                SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc2"),
-                                                                                                SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender"),
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver"),
+                                                                                                CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc2"),
+                                                                                                CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc")));
     CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (m,
                                                                            new MessageMetadata ("msgid",
                                                                                                 "chid",
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                                SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                                SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                                SimpleProcessIdentifier.createWithDefaultScheme ("proc2")));
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("sender"),
+                                                                                                CLIME.IF.createParticipantIdentifierWithDefaultScheme ("receiver"),
+                                                                                                CLIME.IF.createDocumentTypeIdentifierWithDefaultScheme ("doc"),
+                                                                                                CLIME.IF.createProcessIdentifierWithDefaultScheme ("proc2")));
   }
 }

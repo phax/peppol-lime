@@ -7,7 +7,9 @@ This version of the LIME server uses AS2 to forward messages to foreign APs. STA
 
 Latest version: **3.0.1** as of 2016-01-21
 
-**Note**: 3.0.1 will be the last release except some issues or pull requests are opened. This means this project is now in "low effort maintenance" mode :) 
+**Note**: 3.0.1 will be the last release except some issues or pull requests are opened. This means this project is now in "low effort maintenance" mode :)
+
+**Note**: for the fun of it I updated the head revision to 3.5.0-SNAPSHOT with updated Java 8 bindings (untested).  
 
 # Project layout
 This project has the following sub-projects
@@ -19,7 +21,7 @@ This project has the following sub-projects
 To build the project you need at least Java 1.7.
 Simply call `mvn clean install` on the commandline to build all projects.
 
-#Configuration
+# Configuration
 The LIME server uses the file `lime-server.properties` for configuration. The default file resides in the folder `src/main/resources` of the `peppol-lime-server` project. You can change the path of the properties file by setting the system property `lime.server.properties.path` to the absolute path of the configuration file (e.g. by specifying `-Dlime.server.properties.path=/var/www/limeserver.properties` on Java startup). The name of the file does not matter, but if you specify a different properties file please make sure that you also specify an absolute path to the keystore!
 
 Details of the configuration items:

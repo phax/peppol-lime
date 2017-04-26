@@ -40,9 +40,6 @@
  */
 package com.helger.peppol.lime.server;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -51,11 +48,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.commons.collection.ArrayHelper;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.system.SystemProperties;
 import com.helger.peppol.sml.ESML;
-import com.helger.peppol.utils.ConfigFile;
+import com.helger.settings.exchange.configfile.ConfigFile;
+import com.helger.settings.exchange.configfile.ConfigFileBuilder;
 
 /**
  * The central configuration for the SMP server. This class manages the content
@@ -80,21 +75,17 @@ public final class LimeServerConfiguration
 
   static
   {
-    final List <String> aFilePaths = new ArrayList <> ();
     // Check if the system property is present
-    final String sPropertyPath = SystemProperties.getPropertyValue ("lime.server.properties.path");
-    if (StringHelper.hasText (sPropertyPath))
-      aFilePaths.add (sPropertyPath);
-
     // Use the default paths
-    aFilePaths.add ("private-lime-server.properties");
-    aFilePaths.add ("lime-server.properties");
-
-    s_aConfigFile = new ConfigFile (ArrayHelper.newArray (aFilePaths, String.class));
+    s_aConfigFile = new ConfigFileBuilder ().addPathFromSystemProperty ("peppol.lime.server.properties.path")
+                                            .addPathFromSystemProperty ("lime.server.properties.path")
+                                            .addPath ("private-lime-server.properties")
+                                            .addPath ("lime-server.properties")
+                                            .build ();
     if (s_aConfigFile.isRead ())
       s_aLogger.info ("Read lime-server.properties from " + s_aConfigFile.getReadResource ().getPath ());
     else
-      s_aLogger.warn ("Failed to read lime-server.properties from any of the paths: " + aFilePaths);
+      s_aLogger.warn ("Failed to read lime-server.properties");
   }
 
   private LimeServerConfiguration ()
@@ -117,7 +108,7 @@ public final class LimeServerConfiguration
   @Nullable
   public static String getSMLID ()
   {
-    return s_aConfigFile.getString ("sml.id");
+    return s_aConfigFile.getAsString ("sml.id");
   }
 
   /**
@@ -135,31 +126,31 @@ public final class LimeServerConfiguration
   @Nullable
   public static String getAS2KeystorePath ()
   {
-    return s_aConfigFile.getString ("as2.keystore.path");
+    return s_aConfigFile.getAsString ("as2.keystore.path");
   }
 
   @Nullable
   public static String getAS2KeystorePassword ()
   {
-    return s_aConfigFile.getString ("as2.keystore.password");
+    return s_aConfigFile.getAsString ("as2.keystore.password");
   }
 
   @Nullable
   public static String getAS2SenderKeyAlias ()
   {
-    return s_aConfigFile.getString ("as2.sender.keyalias");
+    return s_aConfigFile.getAsString ("as2.sender.keyalias");
   }
 
   @Nullable
   public static String getAS2SenderID ()
   {
-    return s_aConfigFile.getString ("as2.sender.id");
+    return s_aConfigFile.getAsString ("as2.sender.id");
   }
 
   @Nullable
   public static String getAS2SenderEmail ()
   {
-    return s_aConfigFile.getString ("as2.sender.email");
+    return s_aConfigFile.getAsString ("as2.sender.email");
   }
 
   /**
@@ -169,7 +160,7 @@ public final class LimeServerConfiguration
   @Nonnull
   public static ECryptoAlgorithmSign getAS2SignAlgorithm ()
   {
-    final String sAlgo = s_aConfigFile.getString ("as2.sign.algorithm");
+    final String sAlgo = s_aConfigFile.getAsString ("as2.sign.algorithm");
     return ECryptoAlgorithmSign.getFromIDOrDefault (sAlgo, ECryptoAlgorithmSign.DIGEST_SHA1);
   }
 
@@ -181,7 +172,7 @@ public final class LimeServerConfiguration
   @Nullable
   public static String getStoragePath ()
   {
-    return s_aConfigFile.getString ("lime.storage.path");
+    return s_aConfigFile.getAsString ("lime.storage.path");
   }
 
   /**
@@ -192,6 +183,6 @@ public final class LimeServerConfiguration
   @Nullable
   public static String getServiceURL ()
   {
-    return s_aConfigFile.getString ("lime.service.url");
+    return s_aConfigFile.getAsString ("lime.service.url");
   }
 }

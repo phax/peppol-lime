@@ -79,6 +79,8 @@ public class EndpointReference implements IEndpointReference
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("Address", m_sAddress).append ("ChannelID", m_sChannelID).toString ();
+    return new ToStringGenerator (this).append ("Address", m_sAddress)
+                                       .append ("ChannelID", m_sChannelID)
+                                       .getToString ();
   }
 }

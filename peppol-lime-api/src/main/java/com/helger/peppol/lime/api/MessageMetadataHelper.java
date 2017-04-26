@@ -56,16 +56,15 @@ import org.w3c.dom.Element;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.string.StringHelper;
-import com.helger.commons.xml.ChildElementIterator;
-import com.helger.commons.xml.XMLFactory;
 import com.helger.jaxb.JAXBContextCache;
 import com.helger.peppol.identifier.DocumentIdentifierType;
-import com.helger.peppol.identifier.IdentifierHelper;
 import com.helger.peppol.identifier.ParticipantIdentifierType;
 import com.helger.peppol.identifier.ProcessIdentifierType;
-import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
-import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
+import com.helger.peppol.identifier.generic.doctype.SimpleDocumentTypeIdentifier;
+import com.helger.peppol.identifier.generic.participant.SimpleParticipantIdentifier;
+import com.helger.peppol.identifier.generic.process.SimpleProcessIdentifier;
+import com.helger.xml.ChildElementIterator;
+import com.helger.xml.XMLFactory;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Headers;
@@ -99,13 +98,13 @@ public final class MessageMetadataHelper
            "\n\tChannelID:\t" +
            aMetadata.getChannelID () +
            "\n\tSenderID:\t" +
-           IdentifierHelper.getIdentifierURIEncoded (aMetadata.getSenderID ()) +
+           aMetadata.getSenderID ().getURIEncoded () +
            "\n\tRecipientID:\t" +
-           IdentifierHelper.getIdentifierURIEncoded (aMetadata.getRecipientID ()) +
+           aMetadata.getRecipientID ().getURIEncoded () +
            "\n\tDocumentTypeID:\t" +
-           IdentifierHelper.getIdentifierURIEncoded (aMetadata.getDocumentTypeID ()) +
+           aMetadata.getDocumentTypeID ().getURIEncoded () +
            "\n\tProcessID:\t" +
-           IdentifierHelper.getIdentifierURIEncoded (aMetadata.getProcessID ());
+           aMetadata.getProcessID ().getURIEncoded ();
   }
 
   /**
@@ -208,7 +207,7 @@ public final class MessageMetadataHelper
     final Document aDoc = createHeadersDocument (aMetadata);
 
     // Collect headers
-    final List <Header> aHeaders = new ArrayList <Header> ();
+    final List <Header> aHeaders = new ArrayList <> ();
     for (final Element eHeader : new ChildElementIterator (aDoc.getDocumentElement ()))
       aHeaders.add (Headers.create (eHeader));
     return aHeaders;
@@ -264,9 +263,8 @@ public final class MessageMetadataHelper
                                                                 @Nonnull final QName aQName)
   {
     final Header aHeaderPart = aHeaderList.get (aQName, false);
-    return aHeaderPart == null ? null
-                               : new SimpleParticipantIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
-                                                                  aHeaderPart.getStringContent ());
+    return aHeaderPart == null ? null : new SimpleParticipantIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
+                                                                         aHeaderPart.getStringContent ());
   }
 
   /**
@@ -311,9 +309,8 @@ public final class MessageMetadataHelper
   public static SimpleDocumentTypeIdentifier getDocumentTypeID (@Nonnull final HeaderList aHeaderList)
   {
     final Header aHeaderPart = aHeaderList.get (QNAME_DOCUMENTID, false);
-    return aHeaderPart == null ? null
-                               : new SimpleDocumentTypeIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
-                                                                   aHeaderPart.getStringContent ());
+    return aHeaderPart == null ? null : new SimpleDocumentTypeIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
+                                                                          aHeaderPart.getStringContent ());
   }
 
   /**
@@ -328,9 +325,8 @@ public final class MessageMetadataHelper
   public static SimpleProcessIdentifier getProcessID (@Nonnull final HeaderList aHeaderList)
   {
     final Header aHeaderPart = aHeaderList.get (QNAME_PROCESSID, false);
-    return aHeaderPart == null ? null
-                               : new SimpleProcessIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
-                                                              aHeaderPart.getStringContent ());
+    return aHeaderPart == null ? null : new SimpleProcessIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
+                                                                     aHeaderPart.getStringContent ());
   }
 
   /**

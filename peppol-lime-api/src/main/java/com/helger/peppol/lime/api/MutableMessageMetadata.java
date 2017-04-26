@@ -47,12 +47,12 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.peppol.identifier.IDocumentTypeIdentifier;
-import com.helger.peppol.identifier.IParticipantIdentifier;
-import com.helger.peppol.identifier.IProcessIdentifier;
-import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
-import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
+import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
+import com.helger.peppol.identifier.generic.doctype.SimpleDocumentTypeIdentifier;
+import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
+import com.helger.peppol.identifier.generic.participant.SimpleParticipantIdentifier;
+import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
+import com.helger.peppol.identifier.generic.process.SimpleProcessIdentifier;
 
 /**
  * A MessageMetadata object is used to storage the message addressing data
@@ -239,6 +239,6 @@ public class MutableMessageMetadata implements IMessageMetadata
                                        .append ("recipientID", m_aRecipientID)
                                        .append ("documentID", m_aDocumentTypeID)
                                        .append ("processID", m_aProcessID)
-                                       .toString ();
+                                       .getToString ();
   }
 }
